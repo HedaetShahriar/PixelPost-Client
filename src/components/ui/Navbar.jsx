@@ -3,6 +3,7 @@ import logo from '../../assets/logo.png'
 import userIcon from '../../assets/userIcon.png';
 import { Link, NavLink } from 'react-router';
 import useAuth from '../../hooks/useAuth';
+import ThemeToggle from '../ThemeToggle';
 
 const Navbar = () => {
     const { user, handleLogOut } = useAuth();
@@ -14,8 +15,8 @@ const Navbar = () => {
                     to="/"
                     className={({ isActive }) =>
                         `px-3 py-1 rounded transition-colors duration-150 ${isActive
-                            ? "text-accent-content"
-                            : " hover:text-accent-content"
+                            ? ""
+                            : " "
                         }`
                     }
                 >
@@ -27,8 +28,8 @@ const Navbar = () => {
                     to="/upcoming-events"
                     className={({ isActive }) =>
                         `px-3 py-1 rounded transition-colors duration-150 ${isActive
-                            ? "text-accent-content"
-                            : " hover:text-accent-content"
+                            ? ""
+                            : ""
                         }`
                     }
                 >
@@ -44,8 +45,8 @@ const Navbar = () => {
                     to="/create-event"
                     className={({ isActive }) =>
                         `px-3 py-1 rounded transition-colors duration-150 ${isActive
-                            ? "text-accent-content"
-                            : " hover:text-accent-content"
+                            ? ""
+                            : ""
                         }`
                     }
                 >
@@ -85,14 +86,14 @@ const Navbar = () => {
 
                 {/* Navbar Center: Desktop navigation links */}
                 <div className="navbar-center hidden lg:flex">
-                    <ul className="menu menu-horizontal px-1 font-semibold">{navLinks}</ul>
+                    <ul className="menu menu-horizontal px-1 font-semibold">
+                        {navLinks}
+                    </ul>
                 </div>
 
                 {/* Navbar End: Theme toggle and User profile section */}
                 <div className="navbar-end gap-3">
-
-
-                    {/* <ToggleTheme /> */}
+                    <ThemeToggle />
                     {user ? (
                         <div className="dropdown dropdown-end">
                             <label
