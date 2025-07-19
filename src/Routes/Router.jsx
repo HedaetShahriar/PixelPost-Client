@@ -18,10 +18,10 @@ export const router = createBrowserRouter([
                 index: true,
                 element: <Home />,
             },
-            // {
-            //     path: "/post/:postId",
-            //     element: <PostDetails />,
-            // },
+            {
+                path: "/post/:postId",
+                element: <PostDetails />,
+            },
             {
                 path: "/membership",
                 element: <PrivateRoutes><Membership /></PrivateRoutes>,
