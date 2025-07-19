@@ -36,11 +36,11 @@ export const router = createBrowserRouter([
         path: "/auth/register",
         element: <Register />,
     },
-    // {
-    //     path: "/dashboard",
-    //     element: <PrivateRoutes>
-    //         <DashboardLayout />
-    //     </PrivateRoutes>,
+    {
+        path: "/dashboard",
+        element: <PrivateRoutes>
+            <DashboardLayout />
+        </PrivateRoutes>,
     //     children:[
     //         {
     //             index: true,
@@ -75,5 +75,5 @@ export const router = createBrowserRouter([
     //             element: <div>Make Announcement</div>
     //         }
     //     ]
-    // }
+    }
 ]);
