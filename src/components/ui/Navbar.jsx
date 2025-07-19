@@ -7,7 +7,8 @@ import ThemeToggle from '../ThemeToggle';
 import { Bell, LogOut } from 'lucide-react';
 
 const Navbar = () => {
-    const { user, handleLogOut } = useAuth();
+    const { user, logOut } = useAuth();
+    const announcementCount = 5; // Example count, replace with actual logic if needed
 
     const navLinks = (
         <>
@@ -26,7 +27,7 @@ const Navbar = () => {
             </li>
             <li>
                 <NavLink
-                    to="/upcoming-events"
+                    to="/membership"
                     className={({ isActive }) =>
                         `px-3 py-1 rounded transition-colors duration-150 ${isActive
                             ? ""
@@ -43,7 +44,7 @@ const Navbar = () => {
         <>
             <li>
                 <NavLink
-                    to="/create-event"
+                    to="/dashboard"
                     className={({ isActive }) =>
                         `px-3 py-1 rounded transition-colors duration-150 ${isActive
                             ? ""
@@ -64,7 +65,7 @@ const Navbar = () => {
                 <div className="navbar-start">
                     <div className="flex items-center gap-2">
                         <div className="dropdown">
-                            <label tabIndex={0} className="cursor-pointer lg:hidden">
+                            <label tabIndex={0} className="cursor-pointer md:hidden">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-menu-icon lucide-menu"><path d="M4 12h16" /><path d="M4 18h16" /><path d="M4 6h16" /></svg>
                             </label>
                             <ul
@@ -86,7 +87,7 @@ const Navbar = () => {
                 </div>
 
                 {/* Navbar Center: Desktop navigation links */}
-                <div className="navbar-center hidden lg:flex">
+                <div className="navbar-center hidden md:flex">
                     <ul className="menu menu-horizontal px-1 font-semibold">
                         {navLinks}
                     </ul>
@@ -94,9 +95,14 @@ const Navbar = () => {
 
                 {/* Navbar End: Theme toggle and User profile section */}
                 <div className="navbar-end">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center md:gap-4 gap-2">
                         <ThemeToggle />
-                        <Bell size={26} />
+                        <div className="relative flex items-center justify-center w-8 h-8">
+                            <Bell size={26} />
+                            <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 font-semibold text-xs px-1.5 py-0.5 bg-primary text-white rounded-full">
+                                {announcementCount || 0}
+                            </span>
+                        </div>
                         {user ? (
                             <div className="dropdown dropdown-end">
                                 <label
@@ -118,10 +124,17 @@ const Navbar = () => {
                                     tabIndex={0}
                                     className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
                                 >
+                                    <p
+                                        className='font-medium px-2 pt-2'
+                                    >
+                                        {user?.displayName}
+                                    </p>
+
+                                    <div className='divider my-1'></div>
                                     {dropdownLinks}
                                     <div className='divider my-1'></div>
                                     <li>
-                                        <button onClick={handleLogOut} className='btn btn-secondary btn-sm'><LogOut size={24} /> Logout</button>
+                                        <button onClick={logOut} className='btn btn-secondary btn-sm'><LogOut size={24} /> Logout</button>
                                     </li>
                                 </ul>
                             </div>
