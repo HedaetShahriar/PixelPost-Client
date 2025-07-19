@@ -41,39 +41,39 @@ export const router = createBrowserRouter([
         element: <PrivateRoutes>
             <DashboardLayout />
         </PrivateRoutes>,
-    //     children:[
-    //         {
-    //             index: true,
-    //             element: <div>My Profile</div>
-    //         },
-    //         {
-    //             path: "/my-profile",
-    //             element: <div>My Profile</div>,
-    //         },
-    //         {
-    //             path: "/add-post",
-    //             element: <div>Add Post</div>
-    //         },
-    //         {
-    //             path: "/my-posts",
-    //             element: <div>My Posts</div>
-    //         },
-    //         {
-    //             path: "/admin-profile",
-    //             element: <div>Admin Profile</div>
-    //         },
-    //         {
-    //             path: "/manage-users",
-    //             element: <div>Manage Users</div>
-    //         },
-    //         {
-    //             path: "/reported-comments",
-    //             element: <div>Reported Comments</div>
-    //         },
-    //         {
-    //             path: "/make-announcement",
-    //             element: <div>Make Announcement</div>
-    //         }
-    //     ]
+        children:[
+            {
+                index: true,
+                element: <div>My Profile</div>
+            },
+            {
+                path: "/my-profile",
+                element: <div>My Profile</div>,
+            },
+            {
+                path: "/add-post",
+                element: <div>Add Post</div>
+            },
+            {
+                path: "/my-posts",
+                element: <div>My Posts</div>
+            },
+            {
+                path: "/admin-profile",
+                element: <div>Admin Profile</div>
+            },
+            {
+                path: "/manage-users",
+                element: <div>Manage Users</div>
+            },
+            {
+                path: "/reported-comments",
+                element: <div>Reported Comments</div>
+            },
+            {
+                path: "/make-announcement",
+                element: <div>Make Announcement</div>
+            }
+        ]
     }
 ]);
