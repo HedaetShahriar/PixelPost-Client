@@ -22,10 +22,10 @@ export const router = createBrowserRouter([
             //     path: "/post/:postId",
             //     element: <PostDetails />,
             // },
-            // {
-            //     path: "/membership",
-            //     element: <Membership />,
-            // }
+            {
+                path: "/membership",
+                element: <PrivateRoutes><Membership /></PrivateRoutes>,
+            }
         ],
     },
     {
