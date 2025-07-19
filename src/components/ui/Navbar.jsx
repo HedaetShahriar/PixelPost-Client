@@ -4,6 +4,7 @@ import userIcon from '../../assets/userIcon.png';
 import { Link, NavLink } from 'react-router';
 import useAuth from '../../hooks/useAuth';
 import ThemeToggle from '../ThemeToggle';
+import { Bell, LogOut } from 'lucide-react';
 
 const Navbar = () => {
     const { user, handleLogOut } = useAuth();
@@ -92,41 +93,44 @@ const Navbar = () => {
                 </div>
 
                 {/* Navbar End: Theme toggle and User profile section */}
-                <div className="navbar-end gap-3">
-                    <ThemeToggle />
-                    {user ? (
-                        <div className="dropdown dropdown-end">
-                            <label
-                                tabIndex={0}
-                                className="btn btn-ghost btn-circle avatar"
-                                title={user?.displayName || 'User profile'} // Show user's name on hover
-                            >
-                                <div className="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                                    <img
-                                        alt="User profile picture"
-                                        src={
-                                            user.photoURL || userIcon
-                                        }
-                                        referrerPolicy='no-referrer'
-                                    />
-                                </div>
-                            </label>
-                            <ul
-                                tabIndex={0}
-                                className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
-                            >
-                                {dropdownLinks}
-                                <div className='divider my-1'></div>
-                                <li>
-                                    <button onClick={handleLogOut} className='btn btn-secondary btn-sm'><MdLogout size={24} /> Logout</button>
-                                </li>
-                            </ul>
-                        </div>
-                    ) : (
-                        <Link to="/auth/login" className="btn btn-primary btn-outline">
-                            Login
-                        </Link>
-                    )}
+                <div className="navbar-end">
+                    <div className="flex items-center gap-2">
+                        <ThemeToggle />
+                        <Bell size={26} />
+                        {user ? (
+                            <div className="dropdown dropdown-end">
+                                <label
+                                    tabIndex={0}
+                                    className="btn btn-ghost btn-circle avatar"
+                                    title={user?.displayName || 'User profile'} // Show user's name on hover
+                                >
+                                    <div className="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                                        <img
+                                            alt="User profile picture"
+                                            src={
+                                                user.photoURL || userIcon
+                                            }
+                                            referrerPolicy='no-referrer'
+                                        />
+                                    </div>
+                                </label>
+                                <ul
+                                    tabIndex={0}
+                                    className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+                                >
+                                    {dropdownLinks}
+                                    <div className='divider my-1'></div>
+                                    <li>
+                                        <button onClick={handleLogOut} className='btn btn-secondary btn-sm'><LogOut size={24} /> Logout</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        ) : (
+                            <Link to="/auth/login" className="btn btn-primary">
+                                Join Us
+                            </Link>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
