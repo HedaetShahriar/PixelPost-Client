@@ -47,31 +47,31 @@ export const router = createBrowserRouter([
                 element: <div>My Profile</div>
             },
             {
-                path: "/my-profile",
+                path: "my-profile",
                 element: <div>My Profile</div>,
             },
             {
-                path: "/add-post",
+                path: "add-post",
                 element: <div>Add Post</div>
             },
             {
-                path: "/my-posts",
+                path: "my-posts",
                 element: <div>My Posts</div>
             },
             {
-                path: "/admin-profile",
+                path: "admin-profile",
                 element: <div>Admin Profile</div>
             },
             {
-                path: "/manage-users",
+                path: "manage-users",
                 element: <div>Manage Users</div>
             },
             {
-                path: "/reported-comments",
+                path: "reported-comments",
                 element: <div>Reported Comments</div>
             },
             {
-                path: "/make-announcement",
+                path: "make-announcement",
                 element: <div>Make Announcement</div>
             }
         ]

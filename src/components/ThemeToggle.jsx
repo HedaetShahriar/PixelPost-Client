@@ -2,7 +2,7 @@ import { Moon, SunMedium } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 
-const ThemeToggle = () => {
+const ThemeToggle = ({size=28}) => {
     const [theme, setTheme] = useState(() => {
         const savedTheme = localStorage.getItem('theme');
         return savedTheme ? savedTheme : 'light';
@@ -27,10 +27,10 @@ const ThemeToggle = () => {
                     value="dark"
                 />
                 <div className="swap-off text-yellow-600">
-                    <SunMedium size={30}/>
+                    <SunMedium size={size}/>
                 </div>
                 <div className="swap-on">
-                    <Moon size={28}/>
+                    <Moon size={size}/>
                 </div>
             </label>
         </div>
