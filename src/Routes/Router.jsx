@@ -12,6 +12,11 @@ import ReportedComments from "../pages/Dashboard/AdminPages/ReportedComments";
 import ManageUsers from "../pages/Dashboard/AdminPages/ManageUsers";
 import Profile from "../components/Dashboard/Shared/Profile";
 import ErrorPage from "../pages/ErrorPage";
+import UserProfile from "../pages/Dashboard/UserPages/UserProfile";
+import AdminProfile from "../pages/Dashboard/AdminPages/AdminProfile";
+import AddPost from "../pages/Dashboard/UserPages/AddPost";
+import CommentsPage from "../pages/Dashboard/UserPages/CommentsPage";
+import MyPosts from "../pages/Dashboard/UserPages/MyPosts";
 
 export const router = createBrowserRouter([
     {
@@ -53,19 +58,23 @@ export const router = createBrowserRouter([
             },
             {
                 path: "my-profile",
-                element: <div>My Profile</div>,
+                element: <UserProfile />,
             },
             {
                 path: "add-post",
-                element: <div>Add Post</div>
+                element: <AddPost />
             },
             {
                 path: "my-posts",
-                element: <div>My Posts</div>
+                element: <MyPosts />
+            },
+            {
+                path: "comments/:postId",
+                element: <CommentsPage />
             },
             {
                 path: "admin-profile",
-                element: <div>Admin Profile</div>
+                element: <AdminProfile />
             },
             {
                 path: "manage-users",
