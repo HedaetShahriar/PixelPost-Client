@@ -3,7 +3,7 @@ import logo from '../../assets/logo.png'
 import userIcon from '../../assets/userIcon.png';
 import { Link, NavLink } from 'react-router';
 import useAuth from '../../hooks/useAuth';
-import ThemeToggle from '../ThemeToggle';
+import ThemeToggle from './ThemeToggle';
 import { Bell, LogOut } from 'lucide-react';
 
 const Navbar = () => {

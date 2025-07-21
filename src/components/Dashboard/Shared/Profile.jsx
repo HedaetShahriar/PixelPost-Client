@@ -3,7 +3,7 @@ import AdminProfile from '../../../pages/Dashboard/AdminPages/AdminProfile';
 import UserProfile from '../../../pages/Dashboard/UserPages/UserProfile';
 
 const Profile = () => {
-    const role = 'user'; // This should be dynamically set based on user role
+    const role = 'admin'; // This should be dynamically set based on user role
     return (
         <>
             {role === 'admin' && <AdminProfile />}

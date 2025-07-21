@@ -6,11 +6,11 @@ import { LogOut, MenuIcon, UserRound } from 'lucide-react';
 import UserMenu from './Menu/UserMenu';
 import AdminMenu from './Menu/AdminMenu';
 import MenuItem from './Menu/MenuItem';
-import ThemeToggle from '../../ThemeToggle';
+import ThemeToggle from '../../ui/ThemeToggle';
 
 const Sidebar = () => {
     const { user, logOut } = useAuth();
-    const role = "user"; // Replace with actual role logic  
+    const role = "admin"; // Replace with actual role logic  
 
     return (
         <>
