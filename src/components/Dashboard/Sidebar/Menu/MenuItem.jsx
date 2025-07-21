@@ -10,10 +10,10 @@ const MenuItem = ({ label, address, icon: Icon }) => {
         }`
       }
     >
-      <Icon className='md:w-8 md:h-8 w-5 h-5 lg:w-6 lg:h-6' />
+      <Icon className='mr-2.5 md:mr-0 md:w-8 md:h-8 w-5 h-5 lg:w-6 lg:h-6' />
 
       <span
-        className="overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out max-w-0 opacity-0 lg:max-w-[200px] lg:opacity-100 mx-0 lg:mx-4"
+        className="overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out md:max-w-0 md:opacity-0 lg:max-w-[200px] lg:opacity-100 mx-0 lg:mx-4"
       >
         {label}
       </span>

@@ -74,9 +74,9 @@ const Sidebar = () => {
                         <Link to="/" className="font-bold text-2xl sora-font overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out max-w-0 opacity-0 lg:max-w-[200px] lg:opacity-100 mx-0 lg:mx-4">PixelPost</Link>
                     </div>
                     {/* <ThemeToggle/> */}
-
+                    <div className='divider my-0 mt-2 lg:mt-3'></div>
                     {/* Nav Items */}
-                    <div className="flex flex-col justify-between flex-1 mt-4">
+                    <div className="flex flex-col justify-between flex-1">
                         <nav>
                             {role === 'user' && <UserMenu />}
                             {role === 'admin' && <AdminMenu />}
@@ -92,12 +92,12 @@ const Sidebar = () => {
                             className="overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out max-w-0 opacity-0 lg:max-w-[200px] lg:opacity-100 mx-0 lg:mr-2.5"
                         >Theme Mode :
                         </span>
-                        <ThemeToggle size={34}/>
+                        <ThemeToggle size={34} />
                     </div>
-                    <hr className="my-2" />
+                    <div className='divider my-0 mt-1'></div>
                     <button
                         onClick={logOut}
-                        className="flex w-full items-center px-4 py-2 mt-3 text-gray-600 hover:bg-gray-300 hover:text-gray-700 transition-colors duration-300 transform md:rounded-full lg:rounded-2xl"
+                        className="flex w-full items-center px-4 py-2 mt-1 text-gray-600 hover:bg-gray-300 hover:text-gray-700 transition-colors duration-300 transform md:rounded-full lg:rounded-2xl"
                     >
                         <LogOut className="md:w-8 md:h-8 w-5 h-5 lg:w-6 lg:h-6" />
 

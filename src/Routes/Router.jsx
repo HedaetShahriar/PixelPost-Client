@@ -3,16 +3,21 @@ import MainLayout from "../layouts/MainLayout";
 import Home from "../pages/Home";
 import SignIn from "../pages/SignIn";
 import Register from "../pages/Register";
-// import ErrorPage from "../components/ErrorPage/ErrorPage";
 import Membership from "../pages/Membership";
 import PrivateRoutes from "./PrivateRoutes";
 import DashboardLayout from "../layouts/DashboardLayout";
 import PostDetails from "../pages/PostDetails";
+import MakeAnnouncement from "../pages/Dashboard/AdminPages/MakeAnnouncement";
+import ReportedComments from "../pages/Dashboard/AdminPages/ReportedComments";
+import ManageUsers from "../pages/Dashboard/AdminPages/ManageUsers";
+import Profile from "../components/Dashboard/Shared/Profile";
+import ErrorPage from "../pages/ErrorPage";
 
 export const router = createBrowserRouter([
     {
         path: "/",
         element: <MainLayout />,
+        errorElement: <ErrorPage/>,
         children: [
             {
                 index: true,
@@ -44,7 +49,7 @@ export const router = createBrowserRouter([
         children:[
             {
                 index: true,
-                element: <div>My Profile</div>
+                element: <Profile />,
             },
             {
                 path: "my-profile",
@@ -64,15 +69,15 @@ export const router = createBrowserRouter([
             },
             {
                 path: "manage-users",
-                element: <div>Manage Users</div>
+                element: <ManageUsers />
             },
             {
                 path: "reported-comments",
-                element: <div>Reported Comments</div>
+                element: <ReportedComments />
             },
             {
                 path: "make-announcement",
-                element: <div>Make Announcement</div>
+                element: <MakeAnnouncement />
             }
         ]
     }
