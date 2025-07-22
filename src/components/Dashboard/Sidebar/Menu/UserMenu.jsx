@@ -1,15 +1,10 @@
 import React from 'react';
 import MenuItem from './MenuItem';
-import { BookMarked, CirclePlus, CircleUserRound } from 'lucide-react';
+import { BookMarked, CirclePlus} from 'lucide-react';
 
 const UserMenu = () => {
     return (
         <>
-            <MenuItem
-                address={"/dashboard/my-profile"}
-                icon={CircleUserRound}
-                label={"My Profile"}
-            />
             <MenuItem
                 address={"/dashboard/add-post"}
                 icon={CirclePlus}

@@ -38,15 +38,14 @@ const statusIcon = (status) => {
     }
 };
 
-const UserProfile = () => {
-    // const [user, setUser] = useState(dummyUser);
-    const { user } = useAuth()
+const UserProfile = ({user}) => {
     const posts = dummyPosts;
+    const {name, email, image ,membership} = user;
 
     // modal state: 'edit', 'password', 'membership' or null (none)
     const [modalOpen, setModalOpen] = useState(null);
 
-    const isMember = user?.membership === 'gold';
+    const isMember = membership === 'gold';
 
     // Toggle membership inside modal
     const toggleMembership = () => {
@@ -57,7 +56,7 @@ const UserProfile = () => {
     };
 
     return (
-        <div className='overflow-y-auto h-[calc(100vh-60px)]'>
+        <>
             <div className="w-full max-w-5xl mx-auto mt-10 px-4">
                 {/* Profile Header */}
                 <div className="bg-base-100 border border-gray-200 rounded-lg shadow-sm p-6 md:p-8 flex flex-col  gap-4 md:gap-0 flex-wrap">
@@ -67,7 +66,7 @@ const UserProfile = () => {
                         items-center justify-center">
                             <img
                                 referrerPolicy='no-referrer'
-                                src={user.photoURL}
+                                src={image}
                                 alt="Profile"
                                 className="md:w-34 md:h-34 w-40 h-40 rounded-full border-4 border-white shadow-md object-cover mx-auto"
                             />
@@ -80,12 +79,12 @@ const UserProfile = () => {
 
                         <div className="text-center md:text-left flex-1 -mt-4">
                             <h2 className="text-2xl md:text-3xl font-bold flex flex-wrap items-center justify-center md:justify-start gap-2">
-                                {user.displayName}
+                                {name}
                             </h2>
 
                             <p className="text-gray-600 flex items-center justify-center text-xl md:justify-start gap-2 mt-2 break-words">
                                 <Mail size={18} />
-                                <span className="truncate max-w-full">{user.email}</span>
+                                <span className="truncate max-w-full">{email}</span>
                             </p>
                         </div>
                     </div>
@@ -186,7 +185,7 @@ const UserProfile = () => {
                     {isMember ? "Downgrade to Bronze" : "Upgrade to Gold"}
                 </button>
             </Modal>
-        </div>
+        </>
     );
 };
 

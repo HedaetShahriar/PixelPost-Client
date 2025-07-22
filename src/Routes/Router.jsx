@@ -17,12 +17,13 @@ import AdminProfile from "../pages/Dashboard/AdminPages/AdminProfile";
 import AddPost from "../pages/Dashboard/UserPages/AddPost";
 import CommentsPage from "../pages/Dashboard/UserPages/CommentsPage";
 import MyPosts from "../pages/Dashboard/UserPages/MyPosts";
+import AdminRoutes from "./AdminRoutes";
 
 export const router = createBrowserRouter([
     {
         path: "/",
         element: <MainLayout />,
-        errorElement: <ErrorPage/>,
+        errorElement: <ErrorPage />,
         children: [
             {
                 index: true,
@@ -34,7 +35,10 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/membership",
-                element: <PrivateRoutes><Membership /></PrivateRoutes>,
+                element:
+                    <PrivateRoutes>
+                        <Membership />
+                    </PrivateRoutes>,
             }
         ],
     },
@@ -48,45 +52,81 @@ export const router = createBrowserRouter([
     },
     {
         path: "/dashboard",
-        element: <PrivateRoutes>
-            <DashboardLayout />
-        </PrivateRoutes>,
-        children:[
+        element:
+            <PrivateRoutes>
+                <DashboardLayout />
+            </PrivateRoutes>,
+        children: [
             {
                 index: true,
-                element: <Profile />,
+                element:
+                    <PrivateRoutes>
+                        <Profile />
+                    </PrivateRoutes>,
             },
-            {
-                path: "my-profile",
-                element: <UserProfile />,
-            },
+            // {
+            //     path: "my-profile",
+            //     element:
+            //         <PrivateRoutes>
+            //             <UserProfile />
+            //         </PrivateRoutes>,
+            // },
             {
                 path: "add-post",
-                element: <AddPost />
+                element:
+                    <PrivateRoutes>
+                        <AddPost />
+                    </PrivateRoutes>
             },
             {
                 path: "my-posts",
-                element: <MyPosts />
+                element:
+                    <PrivateRoutes>
+                        <MyPosts />
+                    </PrivateRoutes>
             },
             {
                 path: "comments/:postId",
-                element: <CommentsPage />
+                element:
+                    <PrivateRoutes>
+                        <CommentsPage />
+                    </PrivateRoutes>
             },
-            {
-                path: "admin-profile",
-                element: <AdminProfile />
-            },
+            // {
+            //     path: "admin-profile",
+            //     element:
+            //         <PrivateRoutes>
+            //             <AdminRoutes>
+            //                 <AdminProfile />
+            //             </AdminRoutes>
+            //         </PrivateRoutes>
+            // },
             {
                 path: "manage-users",
-                element: <ManageUsers />
+                element:
+                    <PrivateRoutes>
+                        <AdminRoutes>
+                            <ManageUsers />
+                        </AdminRoutes>
+                    </PrivateRoutes>
             },
             {
                 path: "reported-comments",
-                element: <ReportedComments />
+                element:
+                    <PrivateRoutes>
+                        <AdminRoutes>
+                            <ReportedComments />
+                        </AdminRoutes>
+                    </PrivateRoutes>
             },
             {
                 path: "make-announcement",
-                element: <MakeAnnouncement />
+                element:
+                    <PrivateRoutes>
+                        <AdminRoutes>
+                            <MakeAnnouncement />
+                        </AdminRoutes>
+                    </PrivateRoutes>
             }
         ]
     }

@@ -6,13 +6,13 @@ import Swal from "sweetalert2";
 import logo from '../assets/logo.png';
 import useAuth from "../hooks/useAuth";
 import Navbar from "../components/ui/Navbar";
-import Loader from "../components/Loader/Loader";
 import { saveUserInDB } from "../api/saveUserInDB";
+import LoadingSpinner from "../components/Loader/LoadingSpinner";
 
 const SignIn = () => {
     const { signInWithEmail, googleSignIn, loading, user } = useAuth();
     const navigate = useNavigate();
-    const location = useLocation()
+    const location = useLocation();
     const from = location?.state?.from?.pathname || '/';
 
     const [showPassword, setShowPassword] = useState(false);
@@ -20,7 +20,7 @@ const SignIn = () => {
 
     // Redirect if user is already logged in
     if (user) return <Navigate to={from} replace={true} />
-    if (loading) return <Loader />
+    if (loading) return <LoadingSpinner />
 
     const handleShowPassword = () => setShowPassword(!showPassword);
 

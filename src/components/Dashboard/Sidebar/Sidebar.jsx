@@ -1,16 +1,21 @@
-import { useState } from 'react';
 import logo from '../../../assets/logo.png';
-import { Link } from 'react-router';
+import { Link} from 'react-router';
 import useAuth from '../../../hooks/useAuth';
-import { LogOut, MenuIcon, UserRound } from 'lucide-react';
+import { CircleUserRound, LogOut, MenuIcon } from 'lucide-react';
 import UserMenu from './Menu/UserMenu';
 import AdminMenu from './Menu/AdminMenu';
-import MenuItem from './Menu/MenuItem';
 import ThemeToggle from '../../ui/ThemeToggle';
+import LoadingSpinner from '../../Loader/LoadingSpinner';
+import MenuItem from './Menu/MenuItem';
+import useUser from '../../../hooks/useUser';
 
 const Sidebar = () => {
-    const { user, logOut } = useAuth();
-    const role = "admin"; // Replace with actual role logic  
+    const { logOut } = useAuth();
+    const { user, isLoading } = useUser();
+    const { role } = user || {};
+    if (isLoading) {
+        return <LoadingSpinner />;
+    }
 
     return (
         <>
@@ -45,7 +50,11 @@ const Sidebar = () => {
                             >
                                 <h1 className='font-bold text-center mt-2'>Dashboard</h1>
                                 <div className='divider my-0'></div>
-
+                                <MenuItem
+                                    address={'/dashboard'}
+                                    icon={CircleUserRound}
+                                    label={role === 'admin' ? "Admin Profile" : "My Profile"}
+                                />
                                 {role === 'user' && <UserMenu />}
                                 {role === 'admin' && <AdminMenu />}
 
@@ -78,6 +87,11 @@ const Sidebar = () => {
                     {/* Nav Items */}
                     <div className="flex flex-col justify-between flex-1">
                         <nav>
+                            <MenuItem
+                                address={'/dashboard'}
+                                icon={CircleUserRound}
+                                label={role === 'admin' ? "Admin Profile" : "My Profile"}
+                            />
                             {role === 'user' && <UserMenu />}
                             {role === 'admin' && <AdminMenu />}
                         </nav>

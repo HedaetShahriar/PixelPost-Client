@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Mail, Tags, UserRoundPen, X } from 'lucide-react';
-import useAuth from '../../../hooks/useAuth';
 import Modal from '../../../components/ui/Modal';
 
 const dummyStats = {
@@ -10,8 +9,8 @@ const dummyStats = {
     users: 430,
 };
 
-const AdminProfile = () => {
-    const { user } = useAuth();
+const AdminProfile = ({user}) => {
+    const {name, email, image } = user;
     const [stats] = useState(dummyStats);
     const [tags, setTags] = useState(['React', 'JavaScript', 'CSS']);
     const [modalOpen, setModalOpen] = useState(false);
@@ -34,7 +33,7 @@ const AdminProfile = () => {
     };
 
     return (
-        <div className='overflow-y-auto h-[calc(100vh-60px)]'>
+        <>
             <div className="w-full max-w-5xl mx-auto mt-10 px-4">
                 {/* Profile Header */}
                 <div className="bg-base-100 border border-gray-400 rounded-lg  p-6 md:p-8 flex flex-col gap-6 md:gap-8">
@@ -43,7 +42,7 @@ const AdminProfile = () => {
                         <div className="flex flex-col items-center justify-center">
                             <div className="relative">
                                 <img
-                                    src={user.photoURL}
+                                    src={image}
                                     alt="Admin Avatar"
                                     className="w-36 h-36 rounded-full object-cover border-4 border-gradient-to-tr from-indigo-600 via-purple-600 to-pink-600 shadow-lg"
                                     referrerPolicy="no-referrer"
@@ -56,12 +55,12 @@ const AdminProfile = () => {
 
                         <div className="text-center md:text-left flex-1 -mt-2">
                             <h2 className="text-2xl md:text-3xl font-bold flex  items-center justify-center md:justify-start gap-2">
-                                {user.displayName}
+                                {name}
                             </h2>
 
                             <p className="text-gray-600 flex items-center justify-center md:justify-start gap-2 mt-1 text-xl">
                                 <Mail size={18} />
-                                <span className="truncate max-w-full">{user.email}</span>
+                                <span className="truncate max-w-full">{email}</span>
                             </p>
                         </div>
                     </div>
@@ -180,7 +179,7 @@ const AdminProfile = () => {
                     Close
                 </button>
             </Modal>
-        </div>
+        </>
     );
 };
 

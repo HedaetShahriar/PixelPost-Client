@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Loader = () => {
+const LoadingSpinner = () => {
     return (
         <div className="flex items-center justify-center min-h-screen">
             <div className="loader"></div>
@@ -8,4 +8,4 @@ const Loader = () => {
     );
 };
 
-export default Loader;
+export default LoadingSpinner;
