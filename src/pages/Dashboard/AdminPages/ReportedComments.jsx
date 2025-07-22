@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Trash2, CheckCircle, X } from "lucide-react";
 import Modal from "../../../components/ui/Modal";
+import Swal from "sweetalert2";
 
 // Dummy reports for demo
 const fakeReports = [
@@ -35,11 +36,37 @@ const ReportedComments = () => {
     const [modalContent, setModalContent] = useState(null);
 
     const handleDelete = (commentId) => {
-        setReports(prev => prev.filter(r => r.commentId !== commentId));
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This will permanently delete the comment.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setReports(prev => prev.filter(r => r.commentId !== commentId));
+                Swal.fire("Deleted!", "The comment has been deleted.", "success");
+            }
+        });
     };
 
     const handleDismiss = (reportId) => {
-        setReports(prev => prev.filter(r => r._id !== reportId));
+        Swal.fire({
+            title: "Dismiss report?",
+            text: "This will remove the report but keep the comment.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#22c55e",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, dismiss",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setReports(prev => prev.filter(r => r._id !== reportId));
+                Swal.fire("Dismissed!", "The report has been dismissed.", "success");
+            }
+        });
     };
 
     return (

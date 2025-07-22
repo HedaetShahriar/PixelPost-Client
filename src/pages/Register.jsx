@@ -6,13 +6,18 @@ import Swal from "sweetalert2";
 import logo from "../assets/logo.png";
 import useAuth from "../hooks/useAuth";
 import Navbar from "../components/ui/Navbar";
+import { getCloudinaryUrl, saveUserInDB } from "../api/saveUserInDB";
 
 const Register = () => {
-    const { registerWithEmail, googleSignIn, updateUserProfile, setUser } = useAuth();
+    const { registerWithEmail, googleSignIn, updateUserProfile } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register,trigger, handleSubmit, formState: { errors } } = useForm({
+        mode: "onBlur",
+        reValidateMode: "onChange",
+    });
 
     // const [preview, setPreview] = useState(null);
 
@@ -24,55 +29,54 @@ const Register = () => {
     // };
 
 
-    const handleGoogleLogin = () => {
-        googleSignIn()
-            .then((result) => {
-                const user = result.user;
-                setUser(user);
-                Swal.fire("Success", "Logged in with Google", "success");
-                navigate(location.state?.from || "/", { replace: true });
-            })
-            .catch((error) => {
-                Swal.fire("Error", error.message, "error");
-            });
+    const handleGoogleLogin = async () => {
+        setIsSubmitting(true);
+        try {
+            const { user } = await googleSignIn();
+            const userData = {
+                name: user?.displayName,
+                email: user?.email,
+                image: user?.photoURL,
+                membership: "bronze",
+            };
+            saveUserInDB(userData);
+            Swal.fire("Success", "Logged in with Google", "success");
+            navigate(location.state?.from || "/", { replace: true });
+        } catch (error) {
+            Swal.fire("Error", error.message, "error");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleShowPassword = () => setShowPassword(!showPassword);
 
     const onSubmit = async (data) => {
-        const imageFile = data.photoURL[0];
-        const formData = new FormData();
-        formData.append("file", imageFile);
-        formData.append("folder", "pixelpost/users");
-        formData.append("public_id", `${data.name}_profile`);
-        formData.append("upload_preset", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
 
+        setIsSubmitting(true);
         try {
-            const res = await fetch(import.meta.env.VITE_CLOUDINARY_URL, {
-                method: "POST",
-                body: formData,
-            });
-            const imageData = await res.json();
-            const imageUrl = imageData.secure_url;
+            //Handle image upload to Cloudinary
+            const imageUrl = await getCloudinaryUrl(data);
+            await registerWithEmail(data.email, data.password);
+            // Update user profile with name and photo URL
+            await updateUserProfile(data.name, imageUrl);
 
-            registerWithEmail(data.email, data.password)
-                .then((result) => {
-                    const user = result.user;
-                    updateUserProfile(data.name, imageUrl)
-                        .then(() => {
-                            setUser(user);
-                            Swal.fire("Success", "Registration successful!", "success");
-                            navigate(location.state?.from || "/", { replace: true });
-                        })
-                        .catch((error) => {
-                            Swal.fire("Error", error.message, "error");
-                        });
-                })
-                .catch((error) => {
-                    Swal.fire("Error", error.message, "error");
-                });
+            const userData = {
+                name: data.name,
+                email: data.email,
+                image: imageUrl,
+                membership: "bronze",
+            };
+            await saveUserInDB(userData);
+            navigate(location.state?.from || "/", { replace: true });
+            // await new Promise(resolve => setTimeout(resolve, 4000));
+            Swal.fire("Success", "Registration successful!", "success");
+
         } catch (error) {
+            console.error("Registration error:", error);
             Swal.fire("Error", error.message, "error");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -107,6 +111,7 @@ const Register = () => {
                                 </span>
                                 <input
                                     {...register("name", { required: "Full name is required" })}
+                                    autoComplete="name"
                                     type="text"
                                     className="input pl-10 w-full focus:outline-none transition-all"
                                     placeholder="Enter your name"
@@ -166,6 +171,7 @@ const Register = () => {
                                         required: "Email is required",
                                         pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Invalid email format" }
                                     })}
+                                    autoComplete="email"
                                     type="email"
                                     className="input pl-10 w-full focus:outline-none transition-all"
                                     placeholder="Enter your Email"
@@ -181,11 +187,13 @@ const Register = () => {
                                 <input
                                     {...register("password", {
                                         required: "Password is required",
-                                        minLength: { value: 6, message: "Minimum 6 characters required" },
                                         pattern: {
-                                            value: /(?=.*[a-z])(?=.*[A-Z])/, message: "Include both uppercase and lowercase letters"
-                                        }
+                                            value: /(?=.*[a-z])(?=.*[A-Z])/, message: "Password must contain at least one uppercase and one lowercase letter"
+                                        },
+                                        minLength: { value: 6, message: "Minimum 6 characters required" },
+                                        onChange: () => trigger("password"),
                                     })}
+                                    autoComplete="new-password"
                                     type={showPassword ? "text" : "password"}
                                     className="input pl-10 pr-9 w-full focus:outline-none transition-all"
                                     placeholder="Enter your password"
@@ -196,7 +204,13 @@ const Register = () => {
                             </div>
                             <p className={`text-sm text-red-500 pl-2 transition-opacity duration-500 ${errors.password ? 'opacity-100' : 'opacity-0'}`}>{errors.password?.message}</p>
 
-                            <button type="submit" className="btn btn-neutral mt-4">Sign up</button>
+                            <button
+                                type="submit"
+                                className={`btn btn-primary mt-4 ${isSubmitting ? 'cursor-not-allowed' : ''}`}
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? "Signing up..." : "Sign up"}
+                            </button>
                         </form>
 
                         <p className="text-center mt-4">Already have an account? <Link to="/auth/login" className="text-[#5dba76] font-semibold">LogIn</Link></p>

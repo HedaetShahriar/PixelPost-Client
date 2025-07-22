@@ -1,46 +1,64 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, Navigate, useLocation, useNavigate } from "react-router";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import Swal from "sweetalert2";
 import logo from '../assets/logo.png';
 import useAuth from "../hooks/useAuth";
 import Navbar from "../components/ui/Navbar";
+import Loader from "../components/Loader/Loader";
+import { saveUserInDB } from "../api/saveUserInDB";
 
 const SignIn = () => {
-    const { signInWithEmail, googleSignIn, setUser } = useAuth();
+    const { signInWithEmail, googleSignIn, loading, user } = useAuth();
     const navigate = useNavigate();
-    const location = useLocation();
+    const location = useLocation()
+    const from = location?.state?.from?.pathname || '/';
+
     const [showPassword, setShowPassword] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm();
 
+    // Redirect if user is already logged in
+    if (user) return <Navigate to={from} replace={true} />
+    if (loading) return <Loader />
+
     const handleShowPassword = () => setShowPassword(!showPassword);
 
-    const handleGoogleLogin = () => {
-        googleSignIn()
-            .then((result) => {
-                const user = result.user;
-                setUser(user);
-                Swal.fire("Welcome", "Logged in successfully with Google", "success");
-                navigate(location.state?.from || "/", { replace: true });
-            })
-            .catch((error) => {
-                Swal.fire("Error", error.message, "error");
-            });
+    const handleGoogleLogin = async () => {
+        try {
+            const { user } = await googleSignIn();
+            const userData = {
+                name: user?.displayName,
+                email: user?.email,
+                image: user?.photoURL,
+                membership: "bronze",
+            };
+            // Save user in database
+            await saveUserInDB(userData);
+            Swal.fire("Success", "Logged in with Google", "success");
+            navigate(location.state?.from || "/", { replace: true });
+        } catch (error) {
+            Swal.fire("Error", error.message, "error");
+        }
     };
+    // Handle form submission
+    const onSubmit = async (data) => {
 
-    const onSubmit = (data) => {
-        signInWithEmail(data.email, data.password)
-            .then((result) => {
-                const user = result.user;
-                setUser(user);
-                Swal.fire("Success", "Logged in successfully!", "success");
-                navigate(location.state?.from || "/", { replace: true });
-
-            })
-            .catch((error) => {
-                Swal.fire("Error", error.message, "error");
-            });
+        try{
+            const { user } = await signInWithEmail(data.email, data.password);
+            const userData = {
+                name: user?.displayName,
+                email: user?.email,
+                image: user?.photoURL,
+                membership: "bronze",
+            };
+            // update user in database
+            await saveUserInDB(userData);
+            Swal.fire("Success", "Logged in successfully!", "success");
+            navigate(location.state?.from || "/", { replace: true });
+        } catch (error) {
+            Swal.fire("Error", error.message, "error");
+        }
     };
 
     return (
