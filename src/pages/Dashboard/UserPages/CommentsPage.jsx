@@ -15,22 +15,22 @@ const CommentsPage = () => {
   const [reported, setReported] = useState({});
   const [modalContent, setModalContent] = useState(null);
 
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const res = await fetch(
-          `/api/comments?postId=${postId}&search=${search}&page=${currentPage}`
-        );
-        const data = await res.json();
-        setComments(data.comments);
-        setTotalPages(data.totalPages);
-      } catch (err) {
-        console.error("Error fetching comments:", err);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchComments = async () => {
+  //     try {
+  //       const res = await fetch(
+  //         `/api/comments?postId=${postId}&search=${search}&page=${currentPage}`
+  //       );
+  //       const data = await res.json();
+  //       setComments(data.comments);
+  //       setTotalPages(data.totalPages);
+  //     } catch (err) {
+  //       console.error("Error fetching comments:", err);
+  //     }
+  //   };
 
-    fetchComments();
-  }, [postId, search, currentPage]);
+  //   fetchComments();
+  // }, [postId, search, currentPage]);
 
   const handleFeedbackChange = (id, value) => {
     setSelectedFeedback(prev => ({ ...prev, [id]: value }));

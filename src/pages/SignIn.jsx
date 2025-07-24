@@ -16,7 +16,10 @@ const SignIn = () => {
     const from = location?.state?.from?.pathname || '/';
 
     const [showPassword, setShowPassword] = useState(false);
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, trigger, handleSubmit, formState: { errors } } = useForm({
+        mode: "onBlur",
+        reValidateMode: "onChange",
+    });
 
     // Redirect if user is already logged in
     if (user) return <Navigate to={from} replace={true} />
@@ -125,7 +128,11 @@ const SignIn = () => {
                                 <input
                                     {...register("password", {
                                         required: "Password is required",
-                                        minLength: { value: 6, message: "Minimum 6 characters required" }
+                                        pattern: {
+                                            value: /(?=.*[a-z])(?=.*[A-Z])/, message: "Password must contain at least one uppercase and one lowercase letter"
+                                        },
+                                        minLength: { value: 6, message: "Minimum 6 characters required" },
+                                        onChange: () => trigger("password"),
                                     })}
                                     type={showPassword ? "text" : "password"}
                                     className="input pl-10 pr-9 w-full focus:outline-none transition-all"

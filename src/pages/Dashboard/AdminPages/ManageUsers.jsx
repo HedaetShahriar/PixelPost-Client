@@ -3,19 +3,30 @@ import { Trash2, Search, ShieldCheck } from 'lucide-react';
 // import Modal from '../../../components/ui/Modal';
 // import { set } from 'react-hook-form';
 import Swal from 'sweetalert2';
+import { useQuery } from '@tanstack/react-query';
+import useAxiosSecure from '../../../hooks/useAxiosSecure';
+import LoadingSpinner from '../../../components/Loader/LoadingSpinner';
+import Pagination from '../../../components/ui/Pagination';
 
-const fakeUsers = [
-    { id: '1', name: 'Alice Johnson', email: 'alice@example.com', role: 'user', membership: 'bronze' },
-    { id: '2', name: 'Bob Smith', email: 'bob@example.com', role: 'consultant', membership: 'gold' },
-    { id: '3', name: 'Charlie Lee', email: 'charlie@example.com', role: 'admin', membership: 'gold' },
-    { id: '4', name: 'Diana Ross', email: 'diana@example.com', role: 'user', membership: 'bronze' },
-    { id: '5', name: 'Ethan Davis', email: 'ethan@example.com', role: 'consultant', membership: 'gold' },
-    { id: '6', name: 'Fiona Green', email: 'fiona@example.com', role: 'user', membership: 'bronze' },
-];
 
 const ManageUsers = () => {
-    const [users, setUsers] = useState(fakeUsers);
+
     const [search, setSearch] = useState('');
+    const [page, setPage] = useState(1);
+    const axiosSecure = useAxiosSecure();
+    const { data, isLoading } = useQuery({
+        queryKey: ['All-users', page],
+        queryFn: async () => {
+            const response = await axiosSecure.get(`/all-users?page=${page}&search=${search}`);
+            return response.data;
+        },
+        keepPreviousData: true,
+    });
+    // console.log(data);
+
+    if (isLoading) return <LoadingSpinner />;
+    const { users, totalPages } = data || {};
+
     // const [modalContent, setModalContent] = useState(null);
     // console.log(modalContent);
 
@@ -47,12 +58,8 @@ const ManageUsers = () => {
             confirmButtonText: 'Yes, make admin!'
         }).then((result) => {
             if (result.isConfirmed) {
-            setUsers(prev =>
-                prev.map(user =>
-                user.id === id ? { ...user, role: 'admin' } : user
-                )
-            );
-            Swal.fire('Success!', 'User has been made an admin.', 'success');
+                // Logic to make admin
+                // Swal.fire('Success!', 'User has been made an admin.', 'success');
             }
         });
     };
@@ -68,12 +75,8 @@ const ManageUsers = () => {
             confirmButtonText: 'Yes, remove admin!'
         }).then((result) => {
             if (result.isConfirmed) {
-            setUsers(prev =>
-                prev.map(user =>
-                user.id === id ? { ...user, role: 'user' } : user
-                )
-            );
-            Swal.fire('Removed!', 'Admin role has been removed.', 'success');
+                // Logic to remove admin role
+                // Swal.fire('Removed!', 'Admin role has been removed.', 'success');
             }
         });
     };
@@ -114,7 +117,7 @@ const ManageUsers = () => {
                     <tbody>
                         {filteredUsers.length ? (
                             filteredUsers.map((user) => (
-                                <tr key={user.id} className="border-t hover:bg-base-100 border-gray-400 transition">
+                                <tr key={user._id} className="border-t hover:bg-base-100 border-gray-400 transition">
                                     <td className="p-3">{user.name}</td>
                                     <td className="p-3">{user.email}</td>
                                     {/* <td className="p-3 text-center capitalize">{user.role}</td> */}
@@ -168,6 +171,14 @@ const ManageUsers = () => {
                     </tbody>
                 </table>
             </div>
+            {/* Pagination */}
+            {totalPages > 0 && (
+                <Pagination
+                    currentPage={page}
+                    totalPages={totalPages}
+                    setPage={setPage}
+                />
+            )}
 
 
             {/* Modal for making/removing admin */}

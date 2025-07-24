@@ -1,5 +1,5 @@
 import logo from '../../../assets/logo.png';
-import { Link} from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import useAuth from '../../../hooks/useAuth';
 import { CircleUserRound, LogOut, MenuIcon } from 'lucide-react';
 import UserMenu from './Menu/UserMenu';
@@ -12,6 +12,7 @@ import useUser from '../../../hooks/useUser';
 const Sidebar = () => {
     const { logOut } = useAuth();
     const { user, isLoading } = useUser();
+    const navigate = useNavigate();
     const { role } = user || {};
     if (isLoading) {
         return <LoadingSpinner />;
@@ -59,7 +60,12 @@ const Sidebar = () => {
                                 {role === 'admin' && <AdminMenu />}
 
                                 <div className='divider my-0'></div>
-                                <button onClick={logOut} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-200 rounded-xl">
+                                <button
+                                    onClick={() => {
+                                        logOut();
+                                        navigate('/', { replace: true });
+                                    }}
+                                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-200 rounded-xl">
                                     <LogOut className='w-5 h-5' />
                                     <span>Logout</span>
                                 </button>
@@ -110,7 +116,10 @@ const Sidebar = () => {
                     </div>
                     <div className='divider my-0 mt-1'></div>
                     <button
-                        onClick={logOut}
+                        onClick={() => {
+                            logOut();
+                            navigate('/', { replace: true });
+                        }}
                         className="flex w-full items-center px-4 py-2 mt-1 text-gray-600 hover:bg-gray-300 hover:text-gray-700 transition-colors duration-300 transform md:rounded-full lg:rounded-2xl"
                     >
                         <LogOut className="md:w-8 md:h-8 w-5 h-5 lg:w-6 lg:h-6" />

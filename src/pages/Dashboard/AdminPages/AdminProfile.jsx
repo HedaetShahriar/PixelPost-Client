@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Mail, Tags, UserRoundPen, X } from 'lucide-react';
 import Modal from '../../../components/ui/Modal';
+import useAxiosSecure from '../../../hooks/useAxiosSecure';
+import useTags from '../../../hooks/useTags';
+import Swal from 'sweetalert2';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 const dummyStats = {
     posts: 1250,
@@ -9,27 +13,60 @@ const dummyStats = {
     users: 430,
 };
 
-const AdminProfile = ({user}) => {
-    const {name, email, image } = user;
+const AdminProfile = ({ user }) => {
+    const { name, email, image } = user;
+    const axiosSecure = useAxiosSecure();
     const [stats] = useState(dummyStats);
-    const [tags, setTags] = useState(['React', 'JavaScript', 'CSS']);
+    const { tags, isTagsLoading } = useTags();
     const [modalOpen, setModalOpen] = useState(false);
+    const queryClient = useQueryClient();
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
-    const onSubmit = (data) => {
+    const mutation = useMutation({
+        mutationFn: async (tag) => {
+            const response = await axiosSecure.post('/tags/add', { tag });
+            return response.data;
+        },
+        onSuccess: () => {
+            Swal.fire('success', 'Tag added successfully', 'success');
+            reset();
+            queryClient.invalidateQueries(['tags']);
+        },
+        onError: (error) => {
+            console.error('Error adding tag:', error);
+        },
+
+    });
+    const deleteTagMutation = useMutation({
+        mutationFn: async (tag) => {
+            const response = await axiosSecure.delete(`/tags/delete/${encodeURIComponent(tag)}`);
+            return response.data;
+        },
+        onSuccess: () => {
+            Swal.fire('success', 'Tag deleted successfully', 'success');
+            queryClient.invalidateQueries(['tags']);
+        },
+        onError: (error) => {
+            console.error('Error deleting tag:', error);
+        },
+
+    });
+
+    const onSubmit = async (data) => {
         const tag = data.tag.trim();
-        if (!tag) return;
+        if (!tag && !isTagsLoading) return;
+
         if (tags.includes(tag)) {
-            alert('Tag already exists');
+            Swal.fire('Error', 'Tag already exists', 'error');
             return;
         }
-        setTags([...tags, tag]);
-        reset();
+        mutation.mutate(tag);
+
     };
 
     const deleteTag = (tagToDelete) => {
-        setTags(tags.filter(t => t !== tagToDelete));
+        deleteTagMutation.mutate(tagToDelete);
     };
 
     return (
@@ -120,8 +157,8 @@ const AdminProfile = ({user}) => {
                                 placeholder="Add new tag"
                                 {...register('tag', { required: 'Tag cannot be empty' })}
                                 className={`flex-1 rounded-lg border px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 ${errors.tag
-                                        ? 'border-red-500 focus:ring-red-500'
-                                        : 'border-gray-300 focus:ring-indigo-600'
+                                    ? 'border-red-500 focus:ring-red-500'
+                                    : 'border-gray-300 focus:ring-indigo-600'
                                     }`}
                                 aria-invalid={errors.tag ? 'true' : 'false'}
                                 spellCheck="false"
@@ -129,6 +166,7 @@ const AdminProfile = ({user}) => {
                             <button
                                 type="submit"
                                 className="btn btn-sm bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-4 rounded-lg font-semibold"
+                                disabled={isTagsLoading}
                             >
                                 Add
                             </button>
@@ -145,22 +183,26 @@ const AdminProfile = ({user}) => {
 
                         {/* Tags List with delete buttons */}
                         <div className="flex flex-wrap justify-center gap-3">
-                            {tags.map((tag) => (
-                                <span
-                                    key={tag}
-                                    className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-800 px-4 py-1 rounded-full font-medium select-none shadow"
-                                >
-                                    {tag}
-                                    <button
-                                        onClick={() => deleteTag(tag)}
-                                        aria-label={`Delete tag ${tag}`}
-                                        type="button"
-                                        className="hover:bg-indigo-300 rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            {!isTagsLoading && Array.isArray(tags) && tags.length > 0 ? (
+                                tags.map((tag) => (
+                                    <span
+                                        key={tag}
+                                        className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-800 px-4 py-1 rounded-full font-medium select-none shadow"
                                     >
-                                        <X size={16} />
-                                    </button>
-                                </span>
-                            ))}
+                                        {tag}
+                                        <button
+                                            onClick={() => deleteTag(tag)}
+                                            aria-label={`Delete tag ${tag}`}
+                                            type="button"
+                                            className="hover:bg-indigo-300 rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    </span>
+                                ))
+                            ) : (
+                                <p className="text-gray-500 italic">No tags found.</p>
+                            )}
                         </div>
                     </section>
 

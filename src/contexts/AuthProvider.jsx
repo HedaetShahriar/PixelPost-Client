@@ -11,6 +11,7 @@ import {
 
 import AuthContext from "./AuthContext";
 import { auth } from "../features/auth/firebase.config";
+import { set } from "react-hook-form";
 
 const AuthProvider = ({ children }) => {
     const[user, setUser] = useState(null);
@@ -44,6 +45,7 @@ const AuthProvider = ({ children }) => {
     const logOut = async () => {
         setLoading(true);
         try {
+            setUser(null);
             return await signOut(auth);
         } finally {
             setLoading(false);
