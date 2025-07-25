@@ -4,10 +4,6 @@ import {
     Trash2,
     MessageSquareMore,
     Search,
-    ChevronLeft,
-    ChevronRight,
-    ChevronDown,
-    ChevronUp,
     ThumbsUp,
     ThumbsDown,
 } from 'lucide-react';
@@ -61,7 +57,7 @@ const MyPosts = () => {
         <div className="p-6 max-w-5xl mx-auto">
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">My Posts</h2>
+                <h2 className="text-xl font-semibold">My Posts: {myPosts.length}</h2>
                 <div className="relative">
                     <Search className="w-4 h-4 absolute left-2 top-2.5 text-gray-400" />
                     <input
@@ -95,7 +91,7 @@ const MyPosts = () => {
                                     key={post._id}
                                     className="border-t border-gray-300 hover:bg-base-100 transition"
                                 >
-                                    <td className="p-3">{post.title}</td>
+                                    <td className="p-3"><Link to={`/post/${post._id}`} className=" hover:underline">{post.title}</Link></td>
                                     <td className="p-3 text-center font-medium text-green-600">
                                         {/* {post.upVote - post.downVote} */}
                                         {/* {post.upVote} Likes - {post.downVote} Dislikes */}
@@ -114,7 +110,7 @@ const MyPosts = () => {
                                             className="text-blue-500 hover:underline cursor-pointer"
                                             title="View Comments"
                                         >
-                                            <MessageSquareMore className="w-4 h-4 mr-1 inline" />view
+                                            <MessageSquareMore className="w-4 h-4 mr-1 inline" />{post?.commentsCount} view
                                         </Link>
                                     </td>
                                     <td className="p-3 text-center">

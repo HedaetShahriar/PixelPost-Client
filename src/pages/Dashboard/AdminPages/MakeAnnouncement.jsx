@@ -9,9 +9,12 @@ import {
   Mail,
 } from "lucide-react";
 import useAuth from "../../../hooks/useAuth";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import Swal from "sweetalert2";
 
 const MakeAnnouncement = () => {
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
 
   const {
     register,
@@ -20,18 +23,22 @@ const MakeAnnouncement = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const announcement = {
-      authorName: user?.displayName || "",
-      authorEmail: user?.email || "",
-      authorImage: user?.photoURL || "",
-      title: data.title,
-      description: data.description,
-      date: new Date().toISOString(),
+      announcedBy: user?.displayName || "",
+      announcedByEmail: user?.email || "",
+      announcedByImage: user?.photoURL || "",
+      announcementTitle: data.title,
+      announcementDescription: data.description,
+      announcedAt: new Date().toISOString(),
     };
-
-    console.log("📢 Announcement Data:", announcement);
-    reset();
+    try{
+      await axiosSecure.post("/announcements", announcement);
+      reset();
+      Swal.fire('success', 'Announcement posted successfully!', 'success');
+    }catch (error) {
+      Swal.fire('error', 'Failed to post announcement.', 'error');
+    }
   };
 
   return (

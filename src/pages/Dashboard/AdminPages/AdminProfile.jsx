@@ -1,27 +1,32 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Mail, Tags, UserRoundPen, X } from 'lucide-react';
+import { Loader2, Mail, Tags, UserRoundPen, X } from 'lucide-react';
 import Modal from '../../../components/ui/Modal';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import useTags from '../../../hooks/useTags';
 import Swal from 'sweetalert2';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-
-const dummyStats = {
-    posts: 1250,
-    comments: 3870,
-    users: 430,
-};
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import Chart from '../../../components/Dashboard/Admin/Chart';
 
 const AdminProfile = ({ user }) => {
     const { name, email, image } = user;
     const axiosSecure = useAxiosSecure();
-    const [stats] = useState(dummyStats);
     const { tags, isTagsLoading } = useTags();
     const [modalOpen, setModalOpen] = useState(false);
     const queryClient = useQueryClient();
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
+
+    //get data app.get('/dashboard/summary')
+    const { data: summaryData, isLoading: isSummaryLoading } = useQuery({
+        queryKey: ['dashboardSummary'],
+        queryFn: async () => {
+            const response = await axiosSecure.get('/dashboard/summary');
+            return response.data;
+        }
+    });
+
+    // console.log('Summary Data:', summaryData);
 
     const mutation = useMutation({
         mutationFn: async (tag) => {
@@ -68,6 +73,7 @@ const AdminProfile = ({ user }) => {
     const deleteTag = (tagToDelete) => {
         deleteTagMutation.mutate(tagToDelete);
     };
+    // const isSummaryLoading = true;
 
     return (
         <>
@@ -118,15 +124,33 @@ const AdminProfile = ({ user }) => {
                     <h3 className="text-2xl md:-mt-10 text-center font-semibold">Stats Overview</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="border-gray-400 border rounded-2xl p-6 text-center">
-                            <p className="text-4xl font-bold text-green-600">{stats.posts}</p>
+                            <p className="text-4xl font-bold text-green-600">
+                                {isSummaryLoading ? (
+                                    <span className='flex justify-center items-center'>
+                                        <Loader2 className="animate-spin h-8 w-8" />
+                                    </span>
+                                ) : summaryData?.posts}
+                            </p>
                             <p className="mt-2 text-2xl font-semibold text-gray-700">Posts</p>
                         </div>
                         <div className="border-gray-400 border rounded-2xl p-6 text-center">
-                            <p className="text-4xl font-bold text-blue-600">{stats.comments}</p>
+                            <p className="text-4xl font-bold text-blue-600">
+                                {isSummaryLoading ? (
+                                    <span className='flex justify-center items-center'>
+                                        <Loader2 className="animate-spin h-8 w-8" />
+                                    </span>
+                                ) : summaryData?.comments}
+                            </p>
                             <p className="mt-2 text-2xl font-semibold text-gray-700">Comments</p>
                         </div>
                         <div className="border-gray-400 border rounded-2xl p-6 text-center">
-                            <p className="text-4xl font-bold text-yellow-500">{stats.users}</p>
+                            <p className="text-4xl font-bold text-yellow-500">
+                                {isSummaryLoading ? (
+                                    <span className='flex justify-center items-center'>
+                                        <Loader2 className="animate-spin h-8 w-8" />
+                                    </span>
+                                ) : summaryData?.users}
+                            </p>
                             <p className="mt-2 text-2xl font-semibold text-gray-700">Users</p>
                         </div>
                     </div>
@@ -134,8 +158,19 @@ const AdminProfile = ({ user }) => {
                     {/* Site Activity */}
                     <h3 className="text-2xl text-center font-semibold ">Site Activity Overview</h3>
                     <div className='flex justify-center items-center'>
-                        <div className="h-80 w-full max-w-2xl  bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 italic select-none shadow-inner">
-                            Pie Chart Here
+                        <div className="bg-base-200 p-6 rounded-2xl shadow-md w-full max-w-4xl mx-auto">
+                            {
+                                isSummaryLoading ? (
+                                    <span className="flex justify-center items-center w-full h-64">
+                                        <Loader2 className="animate-spin h-20 w-20" />
+                                    </span>
+                                ) : (
+                                    <Chart
+                                        users={summaryData?.users}
+                                        posts={summaryData?.posts}
+                                        comments={summaryData?.comments}
+                                    />
+                                )}
                         </div>
                     </div>
 

@@ -7,14 +7,14 @@ import { useQuery } from '@tanstack/react-query';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import LoadingSpinner from '../../../components/Loader/LoadingSpinner';
 import Pagination from '../../../components/ui/Pagination';
+import DashboardLoading from '../../../components/Loader/DashboardLoading';
 
 
 const ManageUsers = () => {
-
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
     const axiosSecure = useAxiosSecure();
-    const { data, isLoading } = useQuery({
+    const { data, isLoading, refetch } = useQuery({
         queryKey: ['All-users', page],
         queryFn: async () => {
             const response = await axiosSecure.get(`/all-users?page=${page}&search=${search}`);
@@ -22,61 +22,44 @@ const ManageUsers = () => {
         },
         keepPreviousData: true,
     });
-    // console.log(data);
-
+    // const isLoad=true;
+    // if (isLoading || isLoad) return <DashboardLoading />;
     if (isLoading) return <LoadingSpinner />;
     const { users, totalPages } = data || {};
 
-    // const [modalContent, setModalContent] = useState(null);
-    // console.log(modalContent);
 
-    // const handleDelete = (id) => {
-    //     Swal.fire({
-    //         title: 'Are you sure?',
-    //         text: "You won't be able to revert this!",
-    //         icon: 'warning',
-    //         showCancelButton: true,
-    //         confirmButtonColor: '#d33',
-    //         cancelButtonColor: '#3085d6',
-    //         confirmButtonText: 'Yes, delete it!'
-    //     }).then((result) => {
-    //         if (result.isConfirmed) {
-    //             setUsers(prev => prev.filter(user => user.id !== id));
-    //             Swal.fire('Deleted!', 'User has been deleted.', 'success');
-    //         }
-    //     });
-    // };
-
-    const handleMakeAdmin = (id) => {
+    const handleMakeAdmin = (name, email) => {
         Swal.fire({
             title: 'Are you sure?',
-            text: "This user will be made an admin.",
+            text: `Make ${name} an admin.`,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#aaa',
-            confirmButtonText: 'Yes, make admin!'
-        }).then((result) => {
+            confirmButtonColor: '#22c55e', // green color
+            cancelButtonColor: '#d33', // red color
+            confirmButtonText: 'Confirm'
+        }).then(async (result) => {
             if (result.isConfirmed) {
-                // Logic to make admin
-                // Swal.fire('Success!', 'User has been made an admin.', 'success');
+                await axiosSecure.patch('/user/role', { email, role: 'admin' });
+                refetch(); // Refresh user list
+                Swal.fire('Success!', `${name} has been promoted to admin.`, 'success');
             }
         });
     };
     // Function to remove admin role
-    const handleRemoveAdmin = (id) => {
+    const handleRemoveAdmin = (name, email) => {
         Swal.fire({
             title: 'Are you sure?',
-            text: "This user will be removed as admin.",
+            text: `Remove ${name} from admin.`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, remove admin!'
-        }).then((result) => {
+            cancelButtonColor: '#3085d6', // blue color
+            confirmButtonColor: '#d33', // red color
+            confirmButtonText: 'Confirm'
+        }).then(async (result) => {
             if (result.isConfirmed) {
-                // Logic to remove admin role
-                // Swal.fire('Removed!', 'Admin role has been removed.', 'success');
+                await axiosSecure.patch('/user/role', { email, role: 'user' });
+                refetch(); // Refresh user list
+                Swal.fire('Success!', `${name} has been removed from admin.`, 'success');
             }
         });
     };
@@ -134,19 +117,18 @@ const ManageUsers = () => {
                                     <td className="p-3 text-center">
                                         {user.role !== 'admin' ? (
                                             <button
-                                                // onClick={() => setModalContent({ userId: user.id, userName: user.name, action: 'makeAdmin' })}
-                                                onClick={() => handleMakeAdmin(user.id)}
+                                                onClick={() => handleMakeAdmin(user.name, user.email)}
                                                 className="text-blue-600 px-2 py-1 border bg-blue-50 rounded-full text-sm cursor-pointer"
                                             >
+                                                <ShieldCheck className="w-4 h-4 text-blue-600 inline-block mr-1" />
                                                 Make Admin
                                             </button>
                                         ) : (
                                             <button
                                                 className=" text-green-600 items-center px-2 py-1 border bg-green-50 rounded-full text-sm cursor-pointer gap-1"
-                                                // onClick={() => setModalContent({ userId: user.id, userName: user.name, action: 'removeAdmin' })}
-                                                onClick={() => handleRemoveAdmin(user.id)}
+                                                onClick={() => handleRemoveAdmin(user.name, user.email)}
                                             >
-                                                {/* <ShieldCheck className="w-4 h-4 text-green-600" title="Already Admin" /> */}
+                                                <ShieldCheck className="w-4 h-4 text-green-600 inline-block mr-1" title="Already Admin" />
                                                 Remove Admin
                                             </button>
                                         )}
@@ -172,7 +154,7 @@ const ManageUsers = () => {
                 </table>
             </div>
             {/* Pagination */}
-            {totalPages > 0 && (
+            {!isLoading && totalPages > 0 && (
                 <Pagination
                     currentPage={page}
                     totalPages={totalPages}

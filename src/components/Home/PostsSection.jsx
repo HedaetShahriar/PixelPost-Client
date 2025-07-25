@@ -1,5 +1,5 @@
 import PostCard from './PostCard';
-import { ArrowDownAZ } from 'lucide-react';
+import { ArrowDownAZ, NutOffIcon } from 'lucide-react';
 import { useState } from 'react';
 
 const PostsSection = ({ postsData, setPage }) => {
@@ -11,6 +11,7 @@ const PostsSection = ({ postsData, setPage }) => {
         setCurrentPage(page);
         setPage(page);
     };
+    console.log('Posts:', posts, totalPages);
 
     const renderPageButtons = () => {
         const buttons = [];
@@ -40,32 +41,20 @@ const PostsSection = ({ postsData, setPage }) => {
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 gap-6">
-                {posts.map((post) => (
-                    <PostCard key={post._id} post={post} />
-                ))}
-            </div>
-
-            {/* Pagination */}
-            <div className="join flex justify-center mt-12 flex-wrap gap-2">
-                <button
-                    className="join-item btn"
-                    onClick={() => handlePageClick(currentPage - 1)}
-                    disabled={currentPage === 1}
-                >
-                    «
-                </button>
-
-                {renderPageButtons()}
-
-                <button
-                    className="join-item btn"
-                    onClick={() => handlePageClick(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                >
-                    »
-                </button>
-            </div>
+            {posts.length === 0 ? (
+                <div className="h-30 flex flex-col items-center justify-center text-center text-gray-400">
+                    <NutOffIcon className="w-12 h-12  mb-4" />
+                    <p className='text-xl'>No posts found.</p>
+                </div>
+            ) : (
+                <>
+                    <div className="grid grid-cols-1 gap-6">
+                        {posts.map((post) => (
+                            <PostCard key={post._id} post={post} />
+                        ))}
+                    </div>
+                </>
+            )}
         </div>
     );
 };

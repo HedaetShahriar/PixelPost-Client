@@ -1,11 +1,10 @@
 import { Search } from 'lucide-react';
-import { useForm } from 'react-hook-form';
 
-const Banner = ({setSearchTerm}) => {
-    const {handleSubmit, register} = useForm();
-    const onSubmit = (data) => {
-        setSearchTerm(data.search);
+const Banner = ({ setSearchTerm }) => {
+    const handleChange = (e) => {
+        setSearchTerm(e.target.value);
     };
+
     return (
         <div
             className="hero min-h-[400px]"
@@ -14,20 +13,13 @@ const Banner = ({setSearchTerm}) => {
             <div className="hero-content text-center text-neutral-content">
                 <div className="max-w-md">
                     <h1 className="mb-5 text-5xl font-bold">Join The Conversation</h1>
-                    <p className="mb-5">Explore topics, share your ideas, and connect with a community of creators and thinkers. Search for posts by tags below.</p>
-                    <form onSubmit={handleSubmit(onSubmit)} className="join w-full">
-                        <input
-                            type="text"
-                            placeholder="Search by tags (e.g., tech, art)"
-                            className="input input-bordered join-item w-full text-gray-800"
-                            {...register('search', { value: '' })}
-                        />
-                        <button
-                            type='submit'
-                            className="btn btn-primary join-item">
-                            <Search size={20} />
-                        </button>
-                    </form>
+                    <p className="mb-5">Explore topics, share your ideas, and connect with a community of creators and thinkers. Search for posts by author or title below.</p>
+                    <input
+                        type="text"
+                        placeholder="Search by author or title"
+                        className="input input-bordered w-full text-gray-800"
+                        onChange={handleChange}
+                    />
                 </div>
             </div>
         </div>

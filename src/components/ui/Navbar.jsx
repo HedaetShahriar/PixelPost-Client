@@ -5,10 +5,20 @@ import { Link, NavLink } from 'react-router';
 import useAuth from '../../hooks/useAuth';
 import ThemeToggle from './ThemeToggle';
 import { Bell, LogOut } from 'lucide-react';
+import useAxios from '../../hooks/useAxios';
+import { useQuery } from '@tanstack/react-query';
 
 const Navbar = () => {
+    const axios = useAxios();
     const { user, logOut } = useAuth();
-    const announcementCount = 5; // Example count, replace with actual logic if needed
+    const {data: announcementsCount, isLoading} = useQuery({
+        queryKey: ['announcements-count',user],
+        queryFn: async () => {
+            const email = user?.email ? `?email=${encodeURIComponent(user.email)}` : '';
+            const res = await axios.get(`/announcements/count${email}`);
+            return res.data.count; 
+        },
+    });
 
     const navLinks = (
         <>
@@ -100,7 +110,7 @@ const Navbar = () => {
                         <div className="relative flex items-center justify-center w-8 h-8">
                             <Bell size={26} />
                             <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 font-semibold text-xs px-1.5 py-0.5 bg-primary text-white rounded-full">
-                                {announcementCount || 0}
+                                {isLoading ? '0' : announcementsCount}
                             </span>
                         </div>
                         {user ? (
