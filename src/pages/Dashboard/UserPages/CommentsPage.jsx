@@ -2,12 +2,16 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { Search, X } from "lucide-react"; // Adjust path as needed
 import Pagination from "../../../components/ui/Pagination";
+import useAxios from "../../../hooks/useAxios";
+import { useQuery } from "@tanstack/react-query";
+import LoadingSpinner from "../../../components/Loader/LoadingSpinner";
 
 const feedbackOptions = ['Spam or irrelevant', 'Abusive content', 'Fake information'];
 
 const CommentsPage = () => {
   const { postId } = useParams();
-  const [comments, setComments] = useState([]);
+  // console.log('Post ID:', postId);
+  const axios = useAxios();
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -15,22 +19,20 @@ const CommentsPage = () => {
   const [reported, setReported] = useState({});
   const [modalContent, setModalContent] = useState(null);
 
-  // useEffect(() => {
-  //   const fetchComments = async () => {
-  //     try {
-  //       const res = await fetch(
-  //         `/api/comments?postId=${postId}&search=${search}&page=${currentPage}`
-  //       );
-  //       const data = await res.json();
-  //       setComments(data.comments);
-  //       setTotalPages(data.totalPages);
-  //     } catch (err) {
-  //       console.error("Error fetching comments:", err);
-  //     }
-  //   };
+  const { data: comments, isLoading: isCommentsLoading } = useQuery({
+    queryKey: ['postComments', postId],
+    queryFn: async () => {
+      const response = await axios.get(`/posts/${postId}/comments`);
+      return response.data;
+    },
+  });
 
-  //   fetchComments();
-  // }, [postId, search, currentPage]);
+  // console.log('Comments:', comments, isCommentsLoading);
+
+
+  if (isCommentsLoading) {
+    return <LoadingSpinner />;
+  }
 
   const handleFeedbackChange = (id, value) => {
     setSelectedFeedback(prev => ({ ...prev, [id]: value }));
@@ -56,7 +58,7 @@ const CommentsPage = () => {
     <div className="p-6 max-w-5xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Comments for Post {postId}</h2>
+        <h2 className="text-xl font-semibold">Comments</h2>
         <div className="relative">
           <Search className="w-4 h-4 absolute left-2 top-2.5 text-gray-400" />
           <input
@@ -77,7 +79,7 @@ const CommentsPage = () => {
         <table className="min-w-full text-sm">
           <thead className="bg-base-300 font-medium">
             <tr>
-              <th className="p-3 text-left">Email</th>
+              <th className="p-3 text-left">Commentator Email</th>
               <th className="p-3 text-left">Comment</th>
               <th className="p-3 text-center">Feedback</th>
               <th className="p-3 text-center">Report</th>
@@ -87,7 +89,7 @@ const CommentsPage = () => {
             {comments.length ? (
               comments.map((comment) => (
                 <tr key={comment._id} className="border-t border-gray-300 hover:bg-base-100 transition">
-                  <td className="p-3">{comment.email}</td>
+                  <td className="p-3">{comment.commentatorEmail}</td>
                   <td className="p-3">{renderCommentText(comment.comment, comment._id)}</td>
                   <td className="p-3 text-center">
                     <select
@@ -105,11 +107,10 @@ const CommentsPage = () => {
                     <button
                       disabled={!selectedFeedback[comment._id] || reported[comment._id]}
                       onClick={() => handleReport(comment._id)}
-                      className={`px-3 py-1 text-xs rounded transition ${
-                        selectedFeedback[comment._id] && !reported[comment._id]
+                      className={`px-3 py-1 text-xs rounded transition ${selectedFeedback[comment._id] && !reported[comment._id]
                           ? 'bg-red-500 text-white hover:bg-red-600'
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      }`}
+                        }`}
                     >
                       {reported[comment._id] ? 'Reported' : 'Report'}
                     </button>

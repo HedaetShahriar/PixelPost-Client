@@ -1,40 +1,106 @@
 // Pages/PostDetails/PostDetails.jsx
 import { useParams, Link, useLocation } from 'react-router';
 import { ThumbsUp, ThumbsDown, MessageCircle, Share2, Send } from 'lucide-react';
-import { FacebookShareButton, FacebookIcon } from 'react-share';
 import useAuth from '../hooks/useAuth';
-
-// Placeholder posts - will be fetched from API
-const posts = [
-    { _id: '1', image: 'https://placehold.co/100x100/f97316/ffffff?text=X', authorImage: 'https://placehold.co/100x100/f97316/ffffff?text=A', authorName: 'user_dev', postTitle: 'The Future of Web Development in 2025', postDescription: 'An in-depth look at the trends shaping the future of web development, from serverless architectures to the rise of AI-powered coding assistants and the evolution of frontend frameworks.', tags: 'tech', postTime: new Date(), commentsCount: 12, voteDifference: 45 },
-    { _id: '2', image: 'https://placehold.co/100x100/10b981/ffffff?text=X', authorImage: 'https://placehold.co/100x100/10b981/ffffff?text=A', authorName: 'healthguru', postTitle: 'A Comprehensive Guide to Healthy Living and Nutrition', postDescription: 'Discover the secrets to a healthier lifestyle. This guide covers everything from balanced diets and workout routines to mental wellness and stress management techniques.', tags: 'health', postTime: new Date(), commentsCount: 5, voteDifference: 30 },
-    { _id: '3', image: 'https://placehold.co/100x100/3b82f6/ffffff?text=X', authorImage: 'https://placehold.co/100x100/3b82f6/ffffff?text=A', authorName: 'wanderlust', postTitle: 'Exploring the Breathtaking Landscapes of the Alps', postDescription: 'Join me on a visual journey through the stunning Swiss Alps. This post features breathtaking photos, travel tips, and stories from my latest adventure in the mountains.', tags: 'travel', postTime: new Date(), commentsCount: 23, voteDifference: 22 },
-    { _id: '4', image: 'https://placehold.co/100x100/8b5cf6/ffffff?text=X', authorImage: 'https://placehold.co/100x100/8b5cf6/ffffff?text=A', authorName: 'react_master', postTitle: 'Advanced State Management Patterns in React', postDescription: 'Tired of prop-drilling? This post dives deep into advanced state management solutions like Zustand, Jotai, and how they compare to traditional tools like Redux and Context API.', tags: 'programming', postTime: new Date(), commentsCount: 8, voteDifference: 15 },
-    { _id: '5', image: 'https://placehold.co/100x100/ec4899/ffffff?text=X', authorImage: 'https://placehold.co/100x100/ec4899/ffffff?text=A  ', authorName: 'designer_life', postTitle: 'The Unspoken Principles of Minimalist Design', postDescription: 'Minimalism is more than just white space. Learn about the core principles that make minimalist design effective, from typography choices to color theory and grid systems.', tags: 'design', postTime: new Date(), commentsCount: 17, voteDifference: 10 },
-];
-
-const comments = [
-    { id: 1, authorName: 'Alice', authorImage: 'https://placehold.co/40x40/3b82f6/ffffff?text=A', text: 'Great article! Really insightful look into the future.' },
-    { id: 2, authorName: 'Bob', authorImage: 'https://placehold.co/40x40/10b981/ffffff?text=B', text: 'I agree with most points, but I think you missed the impact of VR/AR on the web.' },
-    { id: 3, authorName: 'Charlie', authorImage: 'https://placehold.co/40x40/f97316/ffffff?text=C', text: 'Thanks for sharing! This was a very helpful read.' },
-];
+import useAxios from '../hooks/useAxios';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
+import Swal from 'sweetalert2';
+import useAxiosSecure from '../hooks/useAxiosSecure';
+import {
+    FacebookShareButton,
+    TwitterShareButton,
+    WhatsappShareButton,
+    FacebookIcon,
+    TwitterIcon,
+    WhatsappIcon,
+} from 'react-share';
+import { useState } from 'react';
+import LoadingSpinner from '../components/Loader/LoadingSpinner';
 
 const PostDetails = () => {
     const { postId } = useParams();
+    const axios = useAxios();
+    // console.log('Post ID:', postId);
     const { user } = useAuth();
     const location = useLocation();
-    // Find the post by ID from the placeholder data.
-    // In a real app, you would use TanStack Query to fetch this from your API.
-    const post = posts.find(p => p._id === postId);
+    const queryClient = useQueryClient();
+    const { handleSubmit, register, reset } = useForm();
+    const [showShare, setShowShare] = useState(false);
+    const axiosSecure = useAxiosSecure();
 
-    const { _id, authorImage, authorName, postTitle, postDescription, tags, postTime, commentsCount, voteDifference } = post;
+    const { data: post, isLoading } = useQuery({
+        queryKey: ['post', postId],
+        queryFn: async () => {
+            const response = await axios.get(`/posts/${postId}`);
+            return response.data;
+        },
+    });
 
-    // if (!post) {
-    //     return <div className="text-center my-10 text-2xl">Post not found!</div>;
-    // }
+    const { data: comments, isLoading: isCommentsLoading } = useQuery({
+        queryKey: ['postComments', postId],
+        queryFn: async () => {
+            const response = await axios.get(`/posts/${postId}/comments`);
+            return response.data;
+        },
+    });
 
-    // const shareUrl = window.location.href;
-    // const voteDifferences = post.upVote - post.downVote;
+    if (isLoading || isCommentsLoading) {
+        return <LoadingSpinner />;
+    }
+    const {
+        _id,
+        authorImage,
+        authorName,
+        authorEmail,
+        title: postTitle,
+        description: postDescription,
+        tag: tags,
+        postedOn: postTime,
+        upVote,
+        downVote,
+        commentsCount,
+        image,
+    } = post;
+    
+    const shareUrl = `${location.origin}/post/${_id}`;
+    const shareTitle = postTitle;
+
+    const onSubmit = async (data) => {
+        const comment = {
+            postId: _id,
+            commentatorName: user?.displayName || "Anonymous",
+            commentatorImage: user?.photoURL,
+            commentatorEmail: user?.email,
+            postTitle: postTitle,
+            comment: data.commentText.trim(),
+            commentedAt: new Date().toISOString(),
+        };
+
+        try {
+            await axios.post(`/posts/${_id}/comments`, comment);
+            queryClient.invalidateQueries(['postComments', postId]);
+            reset();
+            Swal.fire("Success", "Comment added successfully", "success");
+        } catch (error) {
+            console.error("Error submitting comment:", error);
+            Swal.fire("Error", "Failed to add comment", "error");
+        }
+    }
+
+    const handleVote = async (postId, action) => {
+        if (!user) {
+            Swal.fire("Error", "You must be logged in to vote", "error");
+            return;
+        }
+        try {
+            await axiosSecure.patch(`/posts/${postId}/vote?email=${encodeURIComponent(user?.email)}`, { action });
+            queryClient.invalidateQueries(['post', postId]);
+        } catch (error) {
+            console.error("Error voting on post:", error);
+        }
+    }
+
 
     return (
         <div className="bg-base-100 py-12">
@@ -66,10 +132,10 @@ const PostDetails = () => {
                                 {postDescription}
                             </p>
                             {/* Image section if available */}
-                            {post.image && (
+                            {image && (
                                 <div className="mb-4 flex justify-center">
                                     <img
-                                        src={post.image}
+                                        src={image}
                                         alt={postTitle}
                                         className="max-w-xl w-full rounded-lg object-cover"
                                         style={{ maxHeight: 400 }}
@@ -80,11 +146,15 @@ const PostDetails = () => {
                             <div className="flex items-center text-xl">
                                 <div className="flex flex-1 md:gap-4 gap-2">
                                     {/* Vote Section */}
-                                    <button className="btn btn-ghost btn-sm p-1 hover:bg-green-100 hover:text-green-600">
+                                    <button
+                                        onClick={() => handleVote(_id, 'upVote')}
+                                        className="btn btn-ghost btn-sm p-1 hover:bg-green-100 hover:text-green-600">
                                         <ThumbsUp size={28} />
                                     </button>
-                                    <span className="font-bold text-xl">{voteDifference}</span>
-                                    <button className="btn btn-ghost btn-sm p-1 hover:bg-red-100 hover:text-red-600">
+                                    <span className="font-bold text-xl">{upVote - downVote}</span>
+                                    <button
+                                        onClick={() => handleVote(_id, 'downVote')}
+                                        className="btn btn-ghost btn-sm p-1 hover:bg-red-100 hover:text-red-600">
                                         <ThumbsDown size={28} />
                                     </button>
                                 </div>
@@ -95,11 +165,28 @@ const PostDetails = () => {
                                         <span className='hidden md:inline'> Comments</span>
                                     </Link>
                                 </div>
-                                <div className="flex flex-1 justify-end">
-                                    <button className="btn btn-ghost btn-sm text-xl flex items-center">
-                                        <Share2 size={28} />
-                                        <span className=''>Share</span>
+                                <div className="flex flex-1 justify-end relative">
+                                    <button
+                                        className="btn btn-ghost btn-sm text-xl flex items-center gap-1"
+                                        onClick={() => setShowShare(prev => !prev)}
+                                        type="button"
+                                    >
+                                        <Share2 size={24} />
+                                        <span>Share</span>
                                     </button>
+                                    {showShare && (
+                                        <div className="absolute right-0 top-10 bg-white border rounded shadow-lg z-10 flex gap-2 p-2">
+                                            <FacebookShareButton url={shareUrl} quote={shareTitle}>
+                                                <FacebookIcon size={32} round />
+                                            </FacebookShareButton>
+                                            <TwitterShareButton url={shareUrl} title={shareTitle}>
+                                                <TwitterIcon size={32} round />
+                                            </TwitterShareButton>
+                                            <WhatsappShareButton url={shareUrl} title={shareTitle}>
+                                                <WhatsappIcon size={32} round />
+                                            </WhatsappShareButton>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -107,18 +194,26 @@ const PostDetails = () => {
 
                     {/* Comment Section */}
                     <div className="mt-8 bg-base-100 p-6 border-gray-200 rounded-3xl shadow-sm">
-                        <h3 className="text-2xl font-bold mb-6">Comments</h3>
+                        <h3 className="text-2xl font-bold mb-6">Comments </h3>
                         {/* Comment Form */}
                         {user ? (
                             <div className="flex items-start space-x-4 mb-8">
                                 <img src={user.photoURL || 'https://placehold.co/40x40'} alt="Your avatar" className="w-12 h-12 rounded-full" />
-                                <div className="flex-1">
-                                    <textarea className="textarea textarea-bordered w-full focus:outline-none" placeholder="Add your comment..."></textarea>
-                                    <button className="btn btn-primary btn-sm mt-4">
+                                <form onSubmit={handleSubmit(onSubmit)} className="flex-1">
+                                    <textarea
+                                        {...register("commentText", { required: true })}
+                                        className="textarea textarea-bordered w-full focus:outline-none"
+                                        placeholder="Add your comment..."
+                                    ></textarea>
+                                    <button
+                                        className="btn btn-primary btn-sm mt-4"
+                                        type="submit"
+                                        disabled={!user}
+                                    >
                                         <Send size={16} className="mr-2" />
                                         Submit Comment
                                     </button>
-                                </div>
+                                </form>
                             </div>
                         ) : (
                             <div className="text-center p-4 border rounded-lg bg-base-200 mb-8">
@@ -130,11 +225,11 @@ const PostDetails = () => {
                         {/* Existing Comments */}
                         <div className="space-y-6">
                             {comments.map(comment => (
-                                <div key={comment.id} className="flex items-center space-x-4">
-                                    <img src={comment.authorImage} alt={comment.authorName} className="w-12 h-12 rounded-full" />
+                                <div key={comment._id} className="flex items-center space-x-4">
+                                    <img src={comment.commentatorImage} alt={comment.commentatorName} className="w-12 h-12 rounded-full" />
                                     <div className="flex-1">
-                                        <p className="font-bold text-xl">{comment.authorName}</p>
-                                        <p className="text-lg">{comment.text}</p>
+                                        <p className="font-bold text-xl">{comment.commentatorName}</p>
+                                        <p className="text-lg">{comment.comment}</p>
                                     </div>
                                 </div>
                             ))}

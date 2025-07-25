@@ -35,7 +35,7 @@ const AddPost = () => {
         formState: { errors },
     } = useForm();
 
-    const tagOptions = tags?.map(tag => ({ value: tag, label: tag }));
+    
 
     const onSubmit = async (data) => {
         const postData = {
@@ -72,6 +72,8 @@ const AddPost = () => {
     };
 
     if (isTagsLoading || isCountLoading) return <LoadingSpinner />;
+
+    const tagOptions = tags?.map(tag => ({ value: tag, label: tag }));
 
     const hasExceededLimit = membership === 'bronze' && count >= 5;
 

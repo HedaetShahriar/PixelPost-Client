@@ -1,7 +1,5 @@
-// Pages/Membership/Membership.jsx
-// import CheckoutForm from './CheckoutForm';
 import { ShieldCheck } from 'lucide-react';
-// const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+import CardElement from '../features/membership/CardElement';
 
 const Membership = () => {
     return (
@@ -61,9 +59,7 @@ const Membership = () => {
                                 <span className="text-xl font-medium">/lifetime</span>
                             </p>
                         </div>
-                        {/* <Elements stripe={stripePromise}>
-                            <CheckoutForm />
-                        </Elements> */}
+                        <CardElement />
                     </div>
                 </div>
             </div>
