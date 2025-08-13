@@ -6,13 +6,12 @@ A modern, feature-rich community forum platform built with React, Firebase, and 
 
 ## 🌟 Live Demo
 
-- **Frontend (Client)**: [https://pixelpost-forum.netlify.app](https://pixelpost-forum.netlify.app)
-- **Backend (Server)**: [https://pixel-post-server.vercel.app/](https://pixel-post-server.vercel.app/)
+- **Frontend (Client)**: [https://pixelpost-b51b0.web.app/](https://pixelpost-b51b0.web.app/)
 
 ## 📦 Repository Links
 
-- **Frontend Repository**: [https://github.com/Programming-Hero-Web-Course4/b11a12-client-side-HedaetShahriar](https://github.com/Programming-Hero-Web-Course4/b11a12-client-side-HedaetShahriar)
-- **Backend Repository**: [https://github.com/Programming-Hero-Web-Course4/b11a12-server-side-HedaetShahriar](https://github.com/Programming-Hero-Web-Course4/b11a12-server-side-HedaetShahriar)
+- **Frontend Repository**: [https://github.com/HedaetShahriar/PixelPost-Client](https://github.com/HedaetShahriar/PixelPost-Client)
+- **Backend Repository**: [https://github.com/HedaetShahriar/PixelPost-Server](https://github.com/HedaetShahriar/PixelPost-Server)
 
 ## 👨‍💼 Admin Credentials
 
