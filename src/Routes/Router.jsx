@@ -35,10 +35,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/membership",
-                element:
-                    <PrivateRoutes>
-                        <Membership />
-                    </PrivateRoutes>,
+                element:<Membership />
             }
         ],
     },

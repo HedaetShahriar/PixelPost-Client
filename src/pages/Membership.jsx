@@ -1,7 +1,11 @@
 import { ShieldCheck } from 'lucide-react';
 import CardElement from '../features/membership/CardElement';
+import useAuth from '../hooks/useAuth';
+import { useNavigate } from 'react-router';
 
 const Membership = () => {
+    const navigate = useNavigate();
+    const { user } = useAuth();
     return (
         <div className="bg-base-100 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
@@ -59,7 +63,21 @@ const Membership = () => {
                                 <span className="text-xl font-medium">/lifetime</span>
                             </p>
                         </div>
-                        <CardElement />
+                        {
+                            user ? (<CardElement />) : (
+                                <div className="flex justify-center items-center h-3/5">
+                                    <button
+                                        onClick={() => navigate('/auth/login', { state: { from: '/membership' }, replace: true })}
+                                        className="btn btn-primary"
+                                        type="button"
+                                    >
+                                        Login to Upgrade
+                                    </button>
+                                </div>
+
+                            )
+                        }
+
                     </div>
                 </div>
             </div>
