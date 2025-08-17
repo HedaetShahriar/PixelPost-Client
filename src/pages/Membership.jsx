@@ -64,7 +64,12 @@ const Membership = () => {
                             </p>
                         </div>
                         {
-                            user ? (<CardElement />) : (
+                            user ? (
+                                <>
+                                    {/* Render the CardElement for Stripe payment */}
+                                    <CardElement />
+                                </>
+                            ) : (
                                 <div className="flex justify-center items-center h-3/5">
                                     <button
                                         onClick={() => navigate('/auth/login', { state: { from: '/membership' }, replace: true })}

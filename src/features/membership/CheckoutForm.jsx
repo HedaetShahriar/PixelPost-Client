@@ -79,6 +79,34 @@ const CheckoutForm = () => {
 
     setIsSubmitting(false);
   };
+  const handleTestPayment = async () => {
+    if (!stripe || !clientSecret) return;
+
+    setIsSubmitting(true);
+    setMessage('');
+
+    // Using Stripe test card (4242... works for most test flows)
+    const result = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: {
+          number: '4242424242424242',
+          exp_month: 12,
+          exp_year: 2026,
+          cvc: '123',
+        },
+      },
+    });
+
+    if (result.error) {
+      setMessage(result.error.message);
+    } else if (result.paymentIntent.status === 'succeeded') {
+      setMessage('✅ Payment successful with test card!');
+      Swal.fire('Success', 'Test payment succeeded! You are now a Gold member.', 'success');
+    }
+
+    setIsSubmitting(false);
+  };
+
 
   // CardElement options
   const CARD_ELEMENT_OPTIONS = {
@@ -106,9 +134,8 @@ const CheckoutForm = () => {
         <label className="text-sm font-medium block">
           Card Details
           <div
-            className={`mt-2 bg-base-100 px-3 py-2 rounded-md shadow-sm border border-base-300 ${
-              isMembershipActive ? 'pointer-events-none opacity-50' : 'focus-within:ring-2 focus-within:ring-green-500'
-            }`}
+            className={`mt-2 bg-base-100 px-3 py-2 rounded-md shadow-sm border border-base-300 ${isMembershipActive ? 'pointer-events-none opacity-50' : 'focus-within:ring-2 focus-within:ring-green-500'
+              }`}
           >
             <CardElement options={CARD_ELEMENT_OPTIONS} />
           </div>
@@ -130,12 +157,24 @@ const CheckoutForm = () => {
             isMembershipActive ? 'Upgraded' : 'Pay $10'
           )}
         </button>
+        <button
+          type="button"
+          disabled={!stripe || isSubmitting || isClientSecretLoading || isMembershipActive}
+          onClick={handleTestPayment}
+          className="w-full flex justify-center items-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow hover:bg-blue-700 transition disabled:opacity-50"
+        >
+          {isSubmitting || isClientSecretLoading ? (
+            <>
+              <Loader2 className="animate-spin h-5 w-5 mr-2" />
+              {isClientSecretLoading ? 'Loading...' : 'Processing...'}
+            </>
+          ) : 'Use Test Card'}
+        </button>
 
         {message && (
           <div
-            className={`text-sm font-medium ${
-              message.includes('successful') ? 'text-green-400' : 'text-red-400'
-            }`}
+            className={`text-sm font-medium ${message.includes('successful') ? 'text-green-400' : 'text-red-400'
+              }`}
           >
             {message}
           </div>
