@@ -40,7 +40,7 @@ const Register = () => {
                 membership: "bronze",
             };
             saveUserInDB(userData);
-            Swal.fire("Success", "Logged in with Google", "success");
+            // Swal.fire("Success", "Logged in with Google", "success");
             navigate(location.state?.from || "/", { replace: true });
         } catch (error) {
             Swal.fire("Error", error.message, "error");
@@ -70,7 +70,7 @@ const Register = () => {
             await saveUserInDB(userData);
             navigate(location.state?.from || "/", { replace: true });
             // await new Promise(resolve => setTimeout(resolve, 4000));
-            Swal.fire("Success", "Registration successful!", "success");
+            // Swal.fire("Success", "Registration successful!", "success");
 
         } catch (error) {
             console.error("Registration error:", error);

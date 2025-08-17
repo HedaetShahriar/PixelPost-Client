@@ -38,7 +38,7 @@ const SignIn = () => {
             };
             // Save user in database
             await saveUserInDB(userData);
-            Swal.fire("Success", "Logged in with Google", "success");
+            // Swal.fire("Success", "Logged in with Google", "success");
             navigate(location.state?.from || "/", { replace: true });
         } catch (error) {
             Swal.fire("Error", error.message, "error");
@@ -57,7 +57,7 @@ const SignIn = () => {
             };
             // update user in database
             await saveUserInDB(userData);
-            Swal.fire("Success", "Logged in successfully!", "success");
+            // Swal.fire("Success", "Logged in successfully!", "success");
             navigate(location.state?.from || "/", { replace: true });
         } catch (error) {
             Swal.fire("Error", error.message, "error");
@@ -74,7 +74,7 @@ const SignIn = () => {
             };
             // update user in database
             await saveUserInDB(userData);
-            Swal.fire("Success", "Logged in successfully!", "success");
+            // Swal.fire("Success", "Logged in successfully!", "success");
             navigate(location.state?.from || "/", { replace: true });
         } catch (error) {
             Swal.fire("Error", error.message, "error");
