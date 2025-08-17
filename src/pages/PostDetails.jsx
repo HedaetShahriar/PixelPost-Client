@@ -105,7 +105,7 @@ const PostDetails = () => {
     return (
         <div className="bg-base-100 py-12">
             <div className="container mx-auto">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex bg-base-100 border border-gray-200 rounded-3xl hover:border-gray-400 transition-all duration-300 shadow-sm">
                         {/* Content Section */}
                         <div className="flex-grow p-4">
@@ -128,7 +128,7 @@ const PostDetails = () => {
                             </div>
 
                             {/* Post Description */}
-                            <p className="text-xl mb-4">
+                            <p className="text-xl mb-4 whitespace-pre-line">
                                 {postDescription}
                             </p>
                             {/* Image section if available */}
@@ -193,7 +193,7 @@ const PostDetails = () => {
                     </div>
 
                     {/* Comment Section */}
-                    <div className="mt-8 bg-base-100 p-6 border-gray-200 rounded-3xl shadow-sm">
+                    <div id="comments" className="mt-8 bg-base-100 p-6 border-gray-200 rounded-3xl shadow-sm">
                         <h3 className="text-2xl font-bold mb-6">Comments </h3>
                         {/* Comment Form */}
                         {user ? (

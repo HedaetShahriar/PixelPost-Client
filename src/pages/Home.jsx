@@ -62,7 +62,7 @@ const Home = () => {
         <div>
             <Banner searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
             <div className='container mx-auto'>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     {isTagsLoading ? (
                         <span className='flex w-full h-30 justify-center items-center py-4 text-primary'>
                             <Loader2 className='animate-spin' size={36} />
