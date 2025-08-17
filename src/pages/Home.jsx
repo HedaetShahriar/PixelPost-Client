@@ -20,7 +20,7 @@ const Home = () => {
     queryKey: ['posts', page, currentTag],
     queryFn: async () => {
       const response = await axios.get(
-        `/posts?page=${page}${currentTag ? `&tag=${currentTag}` : ''}`
+        `/posts?limit=40&page=${page}${currentTag ? `&tag=${currentTag}` : ''}`
       );
       return response.data;
     },
