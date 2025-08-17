@@ -79,34 +79,6 @@ const CheckoutForm = () => {
 
     setIsSubmitting(false);
   };
-  const handleTestPayment = async () => {
-    if (!stripe || !clientSecret) return;
-
-    setIsSubmitting(true);
-    setMessage('');
-
-    // Using Stripe test card (4242... works for most test flows)
-    const result = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: {
-        card: {
-          number: '4242424242424242',
-          exp_month: 12,
-          exp_year: 2026,
-          cvc: '123',
-        },
-      },
-    });
-
-    if (result.error) {
-      setMessage(result.error.message);
-    } else if (result.paymentIntent.status === 'succeeded') {
-      setMessage('✅ Payment successful with test card!');
-      Swal.fire('Success', 'Test payment succeeded! You are now a Gold member.', 'success');
-    }
-
-    setIsSubmitting(false);
-  };
-
 
   // CardElement options
   const CARD_ELEMENT_OPTIONS = {
@@ -157,7 +129,7 @@ const CheckoutForm = () => {
             isMembershipActive ? 'Upgraded' : 'Pay $10'
           )}
         </button>
-        <button
+        {/* <button
           type="button"
           disabled={!stripe || isSubmitting || isClientSecretLoading || isMembershipActive}
           onClick={handleTestPayment}
@@ -169,7 +141,7 @@ const CheckoutForm = () => {
               {isClientSecretLoading ? 'Loading...' : 'Processing...'}
             </>
           ) : 'Use Test Card'}
-        </button>
+        </button> */}
 
         {message && (
           <div

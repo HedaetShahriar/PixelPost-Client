@@ -83,7 +83,7 @@ const Register = () => {
     return (
         <>
             <Navbar />
-            <div className="min-h-[calc(100vh-250px)] flex items-center justify-center bg-base-200 py-6 md:py-10">
+            <div className="min-h-[calc(100vh-65px)] flex items-center justify-center bg-base-200 py-6 md:py-10">
                 <div className="bg-base-300 shadow-lg p-8 w-full flex flex-col md:flex-row rounded-4xl gap-6 md:max-w-3xl lg:max-w-4xl">
                     <div className="flex-1 flex flex-col items-center justify-center">
                         <img src={logo} className="w-2/5 md:w-1/2" alt="Logo" />

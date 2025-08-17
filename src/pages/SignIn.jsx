@@ -63,11 +63,28 @@ const SignIn = () => {
             Swal.fire("Error", error.message, "error");
         }
     };
+    const handleAdminLogin = async() => {
+        try{
+            const { user } = await signInWithEmail("admin@gmail.com", "Admin1");
+            const userData = {
+                name: user?.displayName,
+                email: user?.email,
+                image: user?.photoURL,
+                membership: "bronze",
+            };
+            // update user in database
+            await saveUserInDB(userData);
+            Swal.fire("Success", "Logged in successfully!", "success");
+            navigate(location.state?.from || "/", { replace: true });
+        } catch (error) {
+            Swal.fire("Error", error.message, "error");
+        }
+    };
 
     return (
         <>
             <Navbar />
-            <div className="min-h-[calc(100vh-250px)] p-6 md:p-10 flex items-center justify-center bg-base-200">
+            <div className="min-h-[calc(100vh-70px)] p-6 md:p-10 flex items-center justify-center bg-base-200">
                 <div className="bg-base-300 shadow-lg p-8 w-full flex flex-col md:flex-row rounded-4xl gap-6 md:max-w-3xl">
                     {/* Left */}
                     <div className="flex-1 flex flex-col items-center justify-center">
@@ -95,6 +112,10 @@ const SignIn = () => {
                         </div>
 
                         <div className="divider my-2">OR</div>
+                        {/* admin login button */}
+                        <button onClick={handleAdminLogin} className="btn w-full mb-3">
+                            Continue as Admin
+                        </button>
                         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-1">
                             {/* Email */}
                             <label className="label mt-1">Email</label>
