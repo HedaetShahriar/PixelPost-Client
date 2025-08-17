@@ -69,7 +69,7 @@ const Navbar = () => {
     );
 
     return (
-        <div className='sticky top-0 z-10 bg-base-100 shadow-md'>
+        <div className='sticky top-0 z-50 bg-base-100 shadow-md'>
             <div className='container mx-auto navbar'>
                 {/* Navbar Start: Mobile dropdown and Logo */}
                 <div className="navbar-start">
