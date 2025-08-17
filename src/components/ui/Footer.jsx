@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router';
-import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Linkedin, Github } from 'lucide-react';
 import logo from '../../assets/logo.png';
 
 const Footer = () => {
@@ -57,16 +57,13 @@ const Footer = () => {
                 <div className='flex flex-col items-center'>
                     <h1 className='text-lg font-semibold'>Follow Us</h1>
                     <div className='flex items-center gap-4 mt-2'>
-                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
-                            <Facebook className='h-6 w-6 text-blue-600' />
-                        </a>
-                        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+                        <a href="https://twitter.com/hedaetshahriar" target="_blank" rel="noopener noreferrer">
                             <Twitter className='h-6 w-6 text-blue-400' />
                         </a>
-                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-                            <Instagram className='h-6 w-6 text-pink-500' />
+                        <a href="https://github.com/HedaetShahriar" target="_blank" rel="noopener noreferrer">
+                            <Github className='h-6 w-6 text-pink-500' />
                         </a>
-                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+                        <a href="https://www.linkedin.com/in/hedaet-shahriar/" target="_blank" rel="noopener noreferrer">
                             <Linkedin className='h-6 w-6 text-blue-700' />
                         </a>
                     </div>
