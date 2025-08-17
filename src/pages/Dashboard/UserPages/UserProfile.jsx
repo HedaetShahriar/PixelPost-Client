@@ -6,9 +6,9 @@ import {
   CheckCircle,
   PauseCircle,
   UserRoundPen,
-  UserRoundCog
+  UserRoundCog,
 } from 'lucide-react';
-import { Link } from 'react-router'; 
+import { Link } from 'react-router';
 import Modal from '../../../components/ui/Modal';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import { useQuery } from '@tanstack/react-query';
@@ -28,10 +28,19 @@ const statusIcon = (status) => {
 };
 
 const UserProfile = ({ user }) => {
-  const { name, email, image, membership } = user;
+  const { name, email, image, membership, phone, address, bio } = user;
   const axiosSecure = useAxiosSecure();
 
   const [modalOpen, setModalOpen] = useState(null);
+  const [formData, setFormData] = useState({
+    image: image || '',
+    name: name || '',
+    email: email || '',
+    phone: phone || '',
+    address: address || '',
+    bio: bio || '',
+  });
+
   const isMember = membership === 'gold';
 
   const { data, isLoading: isPostsLoading } = useQuery({
@@ -55,6 +64,25 @@ const UserProfile = ({ user }) => {
     // logic to upgrade/downgrade user membership
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    try {
+      await axiosSecure.put(`/users/update/${user._id}`, formData);
+      setModalOpen(null);
+      // Ideally: refetch user data or show a toast
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    }
+  };
+
   return (
     <>
       <div className="w-full max-w-5xl mx-auto mt-10 px-4">
@@ -69,11 +97,10 @@ const UserProfile = ({ user }) => {
                 className="md:w-34 md:h-34 w-40 h-40 rounded-full border-4 border-white shadow-md object-cover mx-auto"
               />
               <span
-                className={`px-3 py-0.5 text-xs rounded-full mt-2 font-semibold select-none ${
-                  isMember
+                className={`px-3 py-0.5 text-xs rounded-full mt-2 font-semibold select-none ${isMember
                     ? 'bg-yellow-400 text-yellow-900'
                     : 'bg-orange-400 text-orange-900'
-                }`}
+                  }`}
               >
                 {isMember ? 'Gold Member' : 'Bronze Member'}
               </span>
@@ -88,6 +115,10 @@ const UserProfile = ({ user }) => {
                 <Mail size={18} />
                 <span className="truncate max-w-full">{email}</span>
               </p>
+
+              {phone && <p className="text-gray-600 mt-1">📞 {phone}</p>}
+              {address && <p className="text-gray-600 mt-1">📍 {address}</p>}
+              {bio && <p className="text-gray-500 mt-2 italic">{bio}</p>}
             </div>
           </div>
 
@@ -101,11 +132,10 @@ const UserProfile = ({ user }) => {
             </button>
             <button
               onClick={() => setModalOpen('membership')}
-              className={`btn btn-sm ${
-                isMember
+              className={`btn btn-sm ${isMember
                   ? 'bg-yellow-400 hover:bg-yellow-500 text-yellow-900'
                   : 'bg-orange-400 hover:bg-orange-500 text-orange-900'
-              } flex items-center justify-center gap-1`}
+                } flex items-center justify-center gap-1`}
             >
               <UserRoundCog size={16} />
               {isMember ? 'Downgrade to Bronze' : 'Upgrade to Gold'}
@@ -118,7 +148,14 @@ const UserProfile = ({ user }) => {
           <h3 className="text-2xl font-semibold mb-4">Recent Posts</h3>
           <div className="flex flex-col gap-4">
             {posts.length === 0 ? (
-              <p className="text-gray-500">You haven’t posted anything yet.</p>
+              <>
+                <p className="text-gray-500 text-center">You haven’t posted anything yet.</p>
+                <div className="flex justify-center">
+                  <Link to="add-post" className="btn btn-sm bg-blue-500 hover:bg-blue-600 text-white">
+                    Create Post
+                  </Link>
+                </div>
+              </>
             ) : (
               posts.map((post) => (
                 <Link
@@ -140,13 +177,12 @@ const UserProfile = ({ user }) => {
                   <div className="flex items-center gap-2 self-start md:self-auto">
                     {statusIcon(post.status || 'published')}
                     <span
-                      className={`text-sm font-semibold capitalize ${
-                        (post.status || 'published').toLowerCase() === 'published'
+                      className={`text-sm font-semibold capitalize ${(post.status || 'published').toLowerCase() === 'published'
                           ? 'text-green-600'
                           : (post.status || '').toLowerCase() === 'pending'
-                          ? 'text-yellow-600'
-                          : 'text-gray-600'
-                      }`}
+                            ? 'text-yellow-600'
+                            : 'text-gray-600'
+                        }`}
                     >
                       {post.status || 'Published'}
                     </span>
@@ -158,23 +194,95 @@ const UserProfile = ({ user }) => {
         </div>
       </div>
 
-      {/* Modals */}
+      {/* Edit Profile Modal */}
       <Modal
         open={modalOpen === 'edit'}
         onClose={() => setModalOpen(null)}
         title="Edit Profile"
       >
-        <p>This is the edit profile modal content.</p>
+        <form onSubmit={handleSaveProfile} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium">Profile Image URL</label>
+            <input
+              type="text"
+              name="image"
+              value={formData.image}
+              onChange={handleInputChange}
+              className="input input-bordered w-full"
+              placeholder="Enter image URL"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Name</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              className="input input-bordered w-full"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              className="input input-bordered w-full"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Phone Number</label>
+            <input
+              type="text"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+              className="input input-bordered w-full"
+              placeholder="+8801XXXXXXXXX"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Address</label>
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleInputChange}
+              className="input input-bordered w-full"
+              placeholder="Enter your address"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Bio</label>
+            <textarea
+              name="bio"
+              value={formData.bio}
+              onChange={handleInputChange}
+              className="textarea textarea-bordered w-full"
+              rows={3}
+              placeholder="Write a short bio..."
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setModalOpen(null)}
+              className="btn btn-sm"
+            >
+              Cancel
+            </button>
+            <button type="submit" className="btn btn-sm btn-primary">
+              Save Changes
+            </button>
+          </div>
+        </form>
       </Modal>
 
-      <Modal
-        open={modalOpen === 'password'}
-        onClose={() => setModalOpen(null)}
-        title="Change Password"
-      >
-        <p>This is the change password modal content.</p>
-      </Modal>
-
+      {/* Membership Modal */}
       <Modal
         open={modalOpen === 'membership'}
         onClose={() => setModalOpen(null)}
@@ -188,11 +296,10 @@ const UserProfile = ({ user }) => {
             toggleMembership();
             setModalOpen(null);
           }}
-          className={`mt-4 btn btn-sm w-full ${
-            isMember
+          className={`mt-4 btn btn-sm w-full ${isMember
               ? 'bg-orange-400 hover:bg-orange-500 text-orange-900'
               : 'bg-yellow-400 hover:bg-yellow-500 text-yellow-900'
-          }`}
+            }`}
         >
           {isMember ? 'Downgrade to Bronze' : 'Upgrade to Gold'}
         </button>
